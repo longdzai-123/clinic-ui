@@ -8,7 +8,6 @@ import ManageDoctor from "../containers/System/Admin/ManageDoctor";
 import ManageSpecialty from "../containers/System/Specialty/ManageSpecialty";
 class System extends Component {
     render() {
-
         const { systemMenuPath, isLoggedIn } = this.props;
         return (
             <>

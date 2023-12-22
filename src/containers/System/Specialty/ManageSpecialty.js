@@ -6,238 +6,238 @@ import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { LANGUAGES, CRUD_ACTIONS, CommonUtils } from "../../../utils";
-//import { createNewSpecialty } from "../../../services/userService";
+import { createNewSpecialty } from "../../../services/specialtyService";
 import { toast } from "react-toastify";
 //import { filterSpecialties, deleteSpecialty } from "../../../services/specialtyService";
-import { withRouter } from '../../../utils/withRouter';
+//import { withRouter } from '../../../utils/withRouter';
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 class ManageSpecialty extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: "",
-      imageBase64: "",
-      descriptionHTML: "",
-      descriptionMarkdown: "",
-      listSpecialties: []
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: "",
+            imageBase64: "",
+            descriptionHTML: "",
+            descriptionMarkdown: "",
+            listSpecialties: []
+        };
+    }
+
+    async componentDidMount() {
+        //await this.getAllSpecialties()
+    }
+
+    // getAllSpecialties = async () => {
+    //     let res = await filterSpecialties({})
+    //     if (res && res.errCode === 0 && res.data) {
+    //         let allSpecialties = res.data.reverse()
+    //         this.setState({
+    //             listSpecialties: allSpecialties
+    //         })
+    //         console.log("res", res)
+    //     }
+    // }
+
+    async componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.language !== prevProps.language) {
+        }
+    }
+
+    handleOnChangeInput = (event, id) => {
+        let stateCopy = { ...this.state };
+        stateCopy[id] = event.target.value;
+        this.setState({
+            ...stateCopy,
+        });
     };
-  }
 
-  async componentDidMount() {
-    await this.getAllSpecialties()
-  }
+    handleEditorChange = ({ html, text }) => {
+        this.setState({
+            descriptionHTML: html,
+            descriptionMarkdown: text,
+        });
+    };
 
-  getAllSpecialties = async () => {
-    let res = await filterSpecialties({})
-    if (res && res.errCode === 0 && res.data) {
-      let allSpecialties = res.data.reverse()
-      this.setState({
-        listSpecialties: allSpecialties
-      })
-      console.log("res", res)
-    }
-  }
+    handleOnChangeImage = async (event) => {
+        let data = event.target.files;
+        let file = data[0];
+        if (file) {
+            let base64 = await CommonUtils.getBase64(file);
 
-  async componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.language !== prevProps.language) {
-    }
-  }
+            this.setState({
+                imageBase64: base64,
+            });
+        }
+    };
 
-  handleOnChangeInput = (event, id) => {
-    let stateCopy = { ...this.state };
-    stateCopy[id] = event.target.value;
-    this.setState({
-      ...stateCopy,
-    });
-  };
+    handleSaveNewSpecialty = async () => {
+        let res = await createNewSpecialty(this.state);
 
-  handleEditorChange = ({ html, text }) => {
-    this.setState({
-      descriptionHTML: html,
-      descriptionMarkdown: text,
-    });
-  };
-
-  handleOnChangeImage = async (event) => {
-    let data = event.target.files;
-    let file = data[0];
-    if (file) {
-      let base64 = await CommonUtils.getBase64(file);
-
-      this.setState({
-        imageBase64: base64,
-      });
-    }
-  };
-
-  handleSaveNewSpecialty = async () => {
-    let res = await createNewSpecialty(this.state);
-
-    if (res && res.errCode === 0) {
-      if (this.props.language == "en") {
-        toast.success("Add new specialty succeeds!");
-      } else {
-        toast.success("Thêm chuyên khoa thành công!");
-      }
-
-      this.setState({
-        name: "",
-        imageBase64: "",
-        descriptionHTML: "",
-        descriptionMarkdown: "",
-      });
-    } else {
-      if (this.props.language == "en") {
-        toast.error("Something wrongs!");
-      } else {
-        toast.error("Lỗi!");
-      }
-
-    }
-  };
-
-  handleDeleteSpecialty = async (specialtyId) => {
-    let { language } = this.props;
-
-    let res = await deleteSpecialty({ id: specialtyId })
-    if (res && res.errCode === 0) {
-      if (language === "en") {
-        toast.success("Deleted!");
-      } else {
-        toast.success("Đã xóa!");
-      }
-
-      await this.getAllSpecialties()
-    } else {
-      if (language === "en") {
-        toast.error("Delete failed!");
-      } else {
-        toast.success("Xóa thất bại!");
-      }
-
-      await this.getAllSpecialties()
-    }
-  }
-
-
-  handleReset = async () => {
-    this.setState({
-      name: "",
-    });
-
-    await this.getAllSpecialties()
-  }
-
-  onChangeInput = (event, id) => {
-    let copyState = { ...this.state };
-
-    copyState[id] = event.target.value;
-
-    this.setState({
-      ...copyState,
-    });
-  };
-
-  handleFilterSpecialties = async () => {
-    let {
-      name
-    } = this.state;
-
-    let data = {
-      name: name
-    }
-
-    let res = await filterSpecialties(data)
-
-    if (res && res.data) {
-      let allSpecialties = res.data.reverse()
-      this.setState({
-        listSpecialties: allSpecialties
-      })
-    }
-  }
-
-  render() {
-    let { listSpecialties } = this.state;
-
-    return (
-      <div className="manage-specialty-container">
-        <div className="ms-title"><FormattedMessage id="admin.manage-specialty.manage-specialty" /></div>
-        <div class="row">
-          <div class="col-12">
-            <h3><FormattedMessage id="medical-history.filters" /></h3>
-          </div>
-          <div class="col-3">
-            <div class="form-group">
-              <label for="exampleInputEmail1"> <FormattedMessage id="admin.manage-specialty.specialty-name" /></label>
-              <input value={this.state.name} onChange={(event) => this.onChangeInput(event, "name")} type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="" />
-            </div>
-          </div>
-          <div class="col-12">
-            <button onClick={() => this.handleFilterSpecialties()} type="button" class="btn btn-primary mr-5"><FormattedMessage id="medical-history.apply" /></button>
-            <button onClick={() => this.handleReset()} type="button" class="btn btn-primary"><FormattedMessage id="medical-history.reset" /></button>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12 text-right mb-16">
-            <button type="submit" class="btn btn-primary pointer mr-5"
-              onClick={() => { this.props.navigate(`/admin-dashboard/manage-specialty/create`, { replace: true }); }}
-            ><i class="fas fa-plus-circle mr-5"></i><FormattedMessage id="manage-user.btn-create" /></button>
-          </div>
-        </div>
-
-        <table class="table table-striped mt-30">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col"><FormattedMessage id="admin.manage-specialty.image" /></th>
-              <th scope="col"><FormattedMessage id="admin.manage-specialty.name" /></th>
-              <th scope="col" class="text-right">&nbsp;</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              listSpecialties.map((specialty, index) => {
-                return (
-                  <tr>
-                    <td scope="row">{index + 1}</td>
-                    <td style={{ backgroundImage: `url(${specialty.image})`, width: "100px", height: "100px", backgroundSize: 'cover' }}></td>
-                    <td>{specialty.name}</td>
-                    <td class="text-right" colspan="2">
-                      <button
-                        className="btn-edit"
-                        onClick={() => { this.props.navigate(`/admin-dashboard/manage-specialty/edit/${specialty.id}`, { replace: true }); }}
-                      >
-                        <i className="fas fa-pencil-alt"></i>
-                      </button>
-                      <button
-                        className="btn-delete"
-                        onClick={() => this.handleDeleteSpecialty(specialty.id)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })
+        if (res && res.code === 200) {
+            if (this.props.language == "en") {
+                toast.success("Add new specialty succeeds!");
+            } else {
+                toast.success("Thêm chuyên khoa thành công!");
             }
-          </tbody>
-        </table>
 
-      </div>
-    );
-  }
+            this.setState({
+                name: "",
+                imageBase64: "",
+                descriptionHTML: "",
+                descriptionMarkdown: "",
+            });
+        } else {
+            if (this.props.language == "en") {
+                toast.error("Something wrongs!");
+            } else {
+                toast.error("Lỗi!");
+            }
+
+        }
+    };
+
+    // handleDeleteSpecialty = async (specialtyId) => {
+    //     let { language } = this.props;
+
+    //     let res = await deleteSpecialty({ id: specialtyId })
+    //     if (res && res.errCode === 0) {
+    //         if (language === "en") {
+    //             toast.success("Deleted!");
+    //         } else {
+    //             toast.success("Đã xóa!");
+    //         }
+
+    //         await this.getAllSpecialties()
+    //     } else {
+    //         if (language === "en") {
+    //             toast.error("Delete failed!");
+    //         } else {
+    //             toast.success("Xóa thất bại!");
+    //         }
+
+    //         await this.getAllSpecialties()
+    //     }
+    // }
+
+    // handleReset = async () => {
+    //     this.setState({
+    //         name: "",
+    //     });
+
+    //     await this.getAllSpecialties()
+    // }
+
+    onChangeInput = (event, id) => {
+        let copyState = { ...this.state };
+
+        copyState[id] = event.target.value;
+
+        this.setState({
+            ...copyState,
+        });
+    };
+
+    // handleFilterSpecialties = async () => {
+    //     let {
+    //         name
+    //     } = this.state;
+
+    //     let data = {
+    //         name: name
+    //     }
+
+    //     let res = await filterSpecialties(data)
+
+    //     if (res && res.data) {
+    //         let allSpecialties = res.data.reverse()
+    //         this.setState({
+    //             listSpecialties: allSpecialties
+    //         })
+    //     }
+    // }
+
+    render() {
+        let { listSpecialties } = this.state;
+
+        return (
+            <div className="manage-specialty-container">
+                <div className="ms-title"><FormattedMessage id="admin.manage-specialty.manage-specialty" /></div>
+                <div class="row">
+                    <div class="col-12">
+                        <h3><FormattedMessage id="medical-history.filters" /></h3>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1"> <FormattedMessage id="admin.manage-specialty.specialty-name" /></label>
+                            <input value={this.state.name} onChange={(event) => this.onChangeInput(event, "name")} type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="" />
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button onClick={() => this.handleFilterSpecialties()} type="button" class="btn btn-primary mr-5"><FormattedMessage id="medical-history.apply" /></button>
+                        <button onClick={() => this.handleReset()} type="button" class="btn btn-primary"><FormattedMessage id="medical-history.reset" /></button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 text-right mb-16">
+                        <button type="submit" class="btn btn-primary pointer mr-5"
+                            onClick={() => { this.props.navigate(`/admin-dashboard/manage-specialty/create`, { replace: true }); }}
+                        ><i class="fas fa-plus-circle mr-5"></i><FormattedMessage id="manage-user.btn-create" /></button>
+                    </div>
+                </div>
+
+                <table class="table table-striped mt-30">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col"><FormattedMessage id="admin.manage-specialty.image" /></th>
+                            <th scope="col"><FormattedMessage id="admin.manage-specialty.name" /></th>
+                            <th scope="col" class="text-right">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            listSpecialties.map((specialty, index) => {
+                                return (
+                                    <tr>
+                                        <td scope="row">{index + 1}</td>
+                                        <td style={{ backgroundImage: `url(${specialty.image})`, width: "100px", height: "100px", backgroundSize: 'cover' }}></td>
+                                        <td>{specialty.name}</td>
+                                        <td class="text-right" colspan="2">
+                                            <button
+                                                className="btn-edit"
+                                                onClick={() => { this.props.navigate(`/admin-dashboard/manage-specialty/edit/${specialty.id}`, { replace: true }); }}
+                                            >
+                                                <i className="fas fa-pencil-alt"></i>
+                                            </button>
+                                            <button
+                                                className="btn-delete"
+                                                onClick={() => this.handleDeleteSpecialty(specialty.id)}
+                                            >
+                                                <i className="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )
+                            })
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        );
+    }
 }
 
 const mapStateToProps = (state) => {
-  return { language: state.app.language };
+    return { language: state.app.language };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+    return {};
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty));
+//export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty));
+export default connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty);
