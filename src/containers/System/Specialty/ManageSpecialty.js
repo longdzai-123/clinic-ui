@@ -6,7 +6,7 @@ import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { LANGUAGES, CRUD_ACTIONS, CommonUtils } from "../../../utils";
-//import { createNewSpecialty } from "../../../services/userService";
+import { createNewSpecialty } from "../../../services/specialtyService";
 import { toast } from "react-toastify";
 //import { filterSpecialties, deleteSpecialty } from "../../../services/specialtyService";
 import { withRouter } from '../../../utils/withRouter';
@@ -26,19 +26,19 @@ class ManageSpecialty extends Component {
   }
 
   async componentDidMount() {
-    await this.getAllSpecialties()
+    //await this.getAllSpecialties()
   }
 
-  getAllSpecialties = async () => {
-    let res = await filterSpecialties({})
-    if (res && res.errCode === 0 && res.data) {
-      let allSpecialties = res.data.reverse()
-      this.setState({
-        listSpecialties: allSpecialties
-      })
-      console.log("res", res)
-    }
-  }
+  // getAllSpecialties = async () => {
+  //   let res = await filterSpecialties({})
+  //   if (res && res.errCode === 0 && res.data) {
+  //     let allSpecialties = res.data.reverse()
+  //     this.setState({
+  //       listSpecialties: allSpecialties
+  //     })
+  //     console.log("res", res)
+  //   }
+  // }
 
   async componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.language !== prevProps.language) {
@@ -98,28 +98,28 @@ class ManageSpecialty extends Component {
     }
   };
 
-  handleDeleteSpecialty = async (specialtyId) => {
-    let { language } = this.props;
+  // handleDeleteSpecialty = async (specialtyId) => {
+  //   let { language } = this.props;
 
-    let res = await deleteSpecialty({ id: specialtyId })
-    if (res && res.errCode === 0) {
-      if (language === "en") {
-        toast.success("Deleted!");
-      } else {
-        toast.success("Đã xóa!");
-      }
+  //   let res = await deleteSpecialty({ id: specialtyId })
+  //   if (res && res.errCode === 0) {
+  //     if (language === "en") {
+  //       toast.success("Deleted!");
+  //     } else {
+  //       toast.success("Đã xóa!");
+  //     }
 
-      await this.getAllSpecialties()
-    } else {
-      if (language === "en") {
-        toast.error("Delete failed!");
-      } else {
-        toast.success("Xóa thất bại!");
-      }
+  //     await this.getAllSpecialties()
+  //   } else {
+  //     if (language === "en") {
+  //       toast.error("Delete failed!");
+  //     } else {
+  //       toast.success("Xóa thất bại!");
+  //     }
 
-      await this.getAllSpecialties()
-    }
-  }
+  //     await this.getAllSpecialties()
+  //   }
+  // }
 
 
   handleReset = async () => {
@@ -140,24 +140,24 @@ class ManageSpecialty extends Component {
     });
   };
 
-  handleFilterSpecialties = async () => {
-    let {
-      name
-    } = this.state;
+  // handleFilterSpecialties = async () => {
+  //   let {
+  //     name
+  //   } = this.state;
 
-    let data = {
-      name: name
-    }
+  //   let data = {
+  //     name: name
+  //   }
 
-    let res = await filterSpecialties(data)
+  //   let res = await filterSpecialties(data)
 
-    if (res && res.data) {
-      let allSpecialties = res.data.reverse()
-      this.setState({
-        listSpecialties: allSpecialties
-      })
-    }
-  }
+  //   if (res && res.data) {
+  //     let allSpecialties = res.data.reverse()
+  //     this.setState({
+  //       listSpecialties: allSpecialties
+  //     })
+  //   }
+  // }
 
   render() {
     let { listSpecialties } = this.state;
@@ -240,4 +240,5 @@ const mapDispatchToProps = (dispatch) => {
   return {};
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty));
+//export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty));
+export default connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty);
