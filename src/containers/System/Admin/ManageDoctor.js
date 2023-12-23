@@ -240,7 +240,9 @@ class ManageDoctor extends Component {
       })
     }
 
-    if (resInfor && resInfor.data) {
+
+    if (resInfor && resInfor.data && resInfor.code == 200) {
+      console.log(resInfor)
       let addressClinic = "",
         nameClinic = "",
         note = "",

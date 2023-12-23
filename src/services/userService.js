@@ -237,9 +237,15 @@ export const saveDetailDoctor = (dataMarkdown) => {
 
 export const saveDoctorInformation = (doctorInfor) => {
     let data = JSON.stringify({
-        "doctorId": doctorInfor.doctorId,
-        "specialtyId": doctorInfor.specialtyId,
-        "clinicId": doctorInfor.clinicId,
+        "user": {
+            "id": doctorInfor.doctorId
+        },
+        "specialty": {
+            "id": doctorInfor.specialtyId
+        },
+        "clinic": {
+            "id": doctorInfor.clinicId
+        },
         "priceId": doctorInfor.selectedPrice,
         "provinceId": doctorInfor.selectedProvice,
         "paymentId": doctorInfor.selectedPayment,

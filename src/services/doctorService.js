@@ -16,3 +16,19 @@ export const getProfileDoctorById = (doctorId) => {
         });
 }
 
+export const getDoctorInforBySpecialtyAndProvince = (specialtyId, provinceId) => {
+    let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `/doctor-infor/get-by-specialty?specialtyId=${specialtyId}&provinceId=${provinceId}`,
+    };
+    return httpRequest.request(config)
+        .then((response) => {
+            console.log(response.data)
+            return response.data
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+

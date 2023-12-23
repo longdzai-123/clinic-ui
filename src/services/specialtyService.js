@@ -26,11 +26,43 @@ export const createNewSpecialty = (specialtyData) => {
     });
 }
 
-export const getAllSpecialty = (limit) => {
+export const getAllSpecialtyLimit = (limit) => {
   let config = {
     method: 'get',
     maxBodyLength: Infinity,
     url: `/specialty?limit=${limit}`,
+  };
+  return httpRequest.request(config)
+    .then((response) => {
+      console.log(response.data)
+      return response.data
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+export const getAllSpecialty = () => {
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: '/specialty/all',
+  };
+  return httpRequest.request(config)
+    .then((response) => {
+      console.log(response.data)
+      return response.data
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+export const getSpecialtyById = (id) => {
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: `/specialty/${id}`,
   };
   return httpRequest.request(config)
     .then((response) => {

@@ -181,14 +181,6 @@ class BookingModal extends Component {
 
       this.props.closeBookingClose();
     }
-    //   else if (res && res.errCode === 3) {
-    //     this.setState({ isShowLoading: false });
-    //     if (language === "en") {
-    //       toast.warn("The number of bookings has been exceeded at this time, please choose another time!");
-    //     } else {
-    //       toast.warn("Đã quá số lượng giới hạn đặt lịch vào thời gian này bạn vui lòng chọn khung thời gian khác!");
-    //     }
-    //   }
 
     else if (res && res.code === 405001) {
       this.setState({ isShowLoading: false });

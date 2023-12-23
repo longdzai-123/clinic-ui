@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import './Specialty.scss';
 import Slider from "react-slick";
 import { FormattedMessage } from "react-intl";
-import { getAllSpecialty } from "../../../services/specialtyService";
+import { getAllSpecialtyLimit } from "../../../services/specialtyService";
 
 
 class Specialty extends Component {
@@ -14,7 +14,7 @@ class Specialty extends Component {
         };
     }
     async componentDidMount() {
-        let res = await getAllSpecialty(4);
+        let res = await getAllSpecialtyLimit(4);
         if (res && res.code === 200 && res.data) {
             this.setState({
                 dataSpecialty: res.data ? res.data : [],
@@ -32,7 +32,7 @@ class Specialty extends Component {
 
     handleLoadMore = async () => {
         let total = this.state.dataSpecialty.length + 4;
-        let res = await getAllSpecialty({ limit: total });
+        let res = await getAllSpecialtyLimit({ limit: total });
         if (res && res.errCode === 0) {
             this.setState({
                 dataSpecialty: res.data ? res.data : [],
