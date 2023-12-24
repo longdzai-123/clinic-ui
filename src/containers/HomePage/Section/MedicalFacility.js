@@ -40,7 +40,6 @@ class MedicalFacility extends Component {
                             </div>
                         </Slider>
                     </div>
-
                 </div>
             </div>
         );

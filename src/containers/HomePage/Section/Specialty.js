@@ -4,6 +4,7 @@ import './Specialty.scss';
 import Slider from "react-slick";
 import { FormattedMessage } from "react-intl";
 import { getAllSpecialtyLimit } from "../../../services/specialtyService";
+import { withRouter } from "react-router";
 
 
 class Specialty extends Component {
@@ -14,7 +15,7 @@ class Specialty extends Component {
         };
     }
     async componentDidMount() {
-        let res = await getAllSpecialtyLimit(4);
+        let res = await getAllSpecialtyLimit(8);
         if (res && res.code === 200 && res.data) {
             this.setState({
                 dataSpecialty: res.data ? res.data : [],
@@ -30,81 +31,43 @@ class Specialty extends Component {
     //     this.props.history.push(`/list-specialty`);
     // };
 
-    handleLoadMore = async () => {
-        let total = this.state.dataSpecialty.length + 4;
-        let res = await getAllSpecialtyLimit({ limit: total });
-        if (res && res.errCode === 0) {
-            this.setState({
-                dataSpecialty: res.data ? res.data : [],
-            });
-        }
-    }
+    // handleLoadMore = async () => {
+    //     let total = this.state.dataSpecialty.length + 4;
+    //     let res = await getAllSpecialtyLimit(total)
+    //     if (res && res.code === 200 && res.data) {
+    //         this.setState({
+    //             dataSpecialty: res.data ? res.data : [],
+    //         });
+    //     }
+    // }
 
     render() {
         let { dataSpecialty } = this.state;
         return (
-            <div class="row">
-                <div class="col-12">
-                    <div className="section-share section-specialty">
-                        <div className="section-container">
-                            <div className="section-header">
-                                <span className="title-section">
-                                    <FormattedMessage id="homepage.specialty-popular" />
-                                </span>
-                                <button
-                                    className="btn-section"
-                                    onClick={() => this.handleClickSeeMoreSpecialty()}
-                                >
-                                    <FormattedMessage id="homepage.more-infor" />
-                                </button>
-                            </div>
-
-                            <div class="row">
-                                {dataSpecialty && dataSpecialty.length > 0 && dataSpecialty.map((item, index) => {
+            <div className='section-share section-specialty'>
+                <div className='section-container'>
+                    <div className="section-header">
+                        <span className="title-section">
+                            <FormattedMessage id="homepage.specialty-popular" />
+                        </span>
+                        <button className="btn-section" onClick={() => this.handleClickSeeMoreSpecialty()}>
+                            <FormattedMessage id="homepage.more-infor" />
+                        </button>
+                    </div>
+                    <div className="section-body">
+                        <Slider {...this.props.settings}>
+                            {dataSpecialty &&
+                                dataSpecialty.length > 0 &&
+                                dataSpecialty.map((item, index) => {
                                     return (
-                                        <div class="col-lg-3 col-auto my-10">
-                                            <div class="card-bs-custom pointer" onClick={() => this.handleViewDetailSpecialty(item)}>
-                                                <figure class="bg-cover bg-center"
-                                                    style={{
-                                                        backgroundImage: `url(${item.image})`,
-                                                    }}></figure>
-                                                <div class="card-body">
-                                                    <h3 class="mb-5 font-weight-normal pointer specialty-name fs-15" >{item.name}</h3>
-                                                </div>
-                                            </div>
+                                        <div className='section-customize' key={index} onClick={() => this.handleViewDetailSpecialty(item)}>
+                                            <div className='bg-img section-specialty"' style={{ backgroundImage: `url(${item.image})`, }} />
+                                            <div className="specialty-name">{item.name}</div>
                                         </div>
-                                    );
+                                    )
                                 })
-                                }
-                            </div>
-                            <div class="d-flex justify-content-center">
-                                <button type="button" class="btn btn-primary my-15" onClick={() => this.handleLoadMore()}>{this.props.language == "en" ? "Load more" : "Tải thêm"}</button>
-                            </div>
-
-                            {/* <div className="section-body">
-                <Slider {...this.props.settings}>
-                  {dataSpecialty &&
-                    dataSpecialty.length > 0 &&
-                    dataSpecialty.map((item, index) => {
-                      return (
-                        <div
-                          className="section-customize specialty-child"
-                          key={index}
-                          onClick={() => this.handleViewDetailSpecialty(item)}
-                        >
-                          <div
-                            className="bg-image section-specialty"
-                            style={{
-                              backgroundImage: `url(${item.image})`,
-                            }}
-                          ></div>
-                          <div className="specialty-name">{item.name}</div>
-                        </div>
-                      );
-                    })}
-                </Slider>
-              </div> */}
-                        </div>
+                            }
+                        </Slider>
                     </div>
                 </div>
             </div>
@@ -124,4 +87,4 @@ const mapDispatchToProps = dispatch => {
     return {};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Specialty);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Specialty));

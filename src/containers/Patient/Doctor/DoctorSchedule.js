@@ -36,7 +36,7 @@ class DoctorSchedule extends Component {
             if (res && res.data) {
                 console.log("res.data", res.data)
                 let copyRes = [...res.data];
-                copy_allAvailableTime = copyRes.filter((element) => element.timeTypeData.value > currentHour)
+                copy_allAvailableTime = copyRes.filter((element) => element.value > currentHour)
                 console.log("copy_allAvailableTime", copy_allAvailableTime)
                 this.setState({
                     allAvailableTime: copy_allAvailableTime ? copy_allAvailableTime : [],
@@ -128,7 +128,7 @@ class DoctorSchedule extends Component {
                 if (res && res.data && date && currentHour) {
                     if (date == this.state.today) {
                         copy_allAvailableTime = [...res.data].filter((element) =>
-                            element.timeTypeData.value > currentHour
+                            element.value > currentHour
                         )
                         if (copy_allAvailableTime) this.setState({
                             allAvailableTime: copy_allAvailableTime ? copy_allAvailableTime : [],
