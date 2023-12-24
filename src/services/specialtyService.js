@@ -11,7 +11,34 @@ export const createNewSpecialty = (specialtyData) => {
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: '/bookings',
+    url: '/specialty',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: data
+  };
+  return httpRequest.request(config)
+    .then((response) => {
+      return response.data
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+export const updateSpecialty = (specialtyData) => {
+  let data = JSON.stringify({
+    "id": specialtyData.id,
+    "descriptionHTML": specialtyData.descriptionHTML,
+    "descriptionMarkdown": specialtyData.descriptionMarkdown,
+    "image": specialtyData.image,
+    "name": specialtyData.name,
+  });
+
+  let config = {
+    method: 'put',
+    maxBodyLength: Infinity,
+    url: '/specialty',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -67,6 +94,22 @@ export const getSpecialtyById = (id) => {
   return httpRequest.request(config)
     .then((response) => {
       console.log(response.data)
+      return response.data
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+export const deleteSpecialty = (id) => {
+
+  let config = {
+    method: 'delete',
+    maxBodyLength: Infinity,
+    url: `/specialty/${id}`,
+  };
+  return httpRequest.request(config)
+    .then((response) => {
       return response.data
     })
     .catch((error) => {

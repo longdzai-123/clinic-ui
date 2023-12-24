@@ -9,7 +9,10 @@ import { LANGUAGES, CRUD_ACTIONS, CommonUtils } from "../../../utils";
 import { createNewSpecialty } from "../../../services/specialtyService";
 import { toast } from "react-toastify";
 //import { filterSpecialties, deleteSpecialty } from "../../../services/specialtyService";
-import { withRouter } from '../../../utils/withRouter';
+import { deleteSpecialty } from "../../../services/specialtyService";
+import { getAllSpecialty } from "../../../services/specialtyService";
+import { withRouter } from "react-router";
+
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -26,19 +29,19 @@ class ManageSpecialty extends Component {
   }
 
   async componentDidMount() {
-    //await this.getAllSpecialties()
+    await this.getAllSpecialty()
   }
 
-  // getAllSpecialties = async () => {
-  //   let res = await filterSpecialties({})
-  //   if (res && res.errCode === 0 && res.data) {
-  //     let allSpecialties = res.data.reverse()
-  //     this.setState({
-  //       listSpecialties: allSpecialties
-  //     })
-  //     console.log("res", res)
-  //   }
-  // }
+  getAllSpecialty = async () => {
+    let res = await getAllSpecialty()
+    if (res && res.code === 200 && res.data) {
+      let allSpecialties = res.data.reverse()
+      this.setState({
+        listSpecialties: allSpecialties
+      })
+      console.log("res", res)
+    }
+  }
 
   async componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.language !== prevProps.language) {
@@ -98,28 +101,29 @@ class ManageSpecialty extends Component {
     }
   };
 
-  // handleDeleteSpecialty = async (specialtyId) => {
-  //   let { language } = this.props;
+  handleDeleteSpecialty = async (specialtyId) => {
+    let { language } = this.props;
 
-  //   let res = await deleteSpecialty({ id: specialtyId })
-  //   if (res && res.errCode === 0) {
-  //     if (language === "en") {
-  //       toast.success("Deleted!");
-  //     } else {
-  //       toast.success("Đã xóa!");
-  //     }
+    let res = await deleteSpecialty(specialtyId)
+    console.log(res)
+    if (res && res.code === 200 && res.data) {
+      if (language === "en") {
+        toast.success("Deleted!");
+      } else {
+        toast.success("Đã xóa!");
+      }
 
-  //     await this.getAllSpecialties()
-  //   } else {
-  //     if (language === "en") {
-  //       toast.error("Delete failed!");
-  //     } else {
-  //       toast.success("Xóa thất bại!");
-  //     }
+      await this.getAllSpecialty()
+    } else {
+      if (language === "en") {
+        toast.error("Delete failed!");
+      } else {
+        toast.error("Xóa thất bại!");
+      }
 
-  //     await this.getAllSpecialties()
-  //   }
-  // }
+      await this.getAllSpecialty()
+    }
+  }
 
 
   handleReset = async () => {
@@ -127,7 +131,7 @@ class ManageSpecialty extends Component {
       name: "",
     });
 
-    await this.getAllSpecialties()
+    await this.getAllSpecialty()
   }
 
   onChangeInput = (event, id) => {
@@ -138,6 +142,17 @@ class ManageSpecialty extends Component {
     this.setState({
       ...copyState,
     });
+  };
+
+  toEditSpecialty = (id) => {
+    if (this.props.history) {
+      this.props.history.push(`/system/specialty-edit/${id}`);
+    }
+  };
+  toCreateSpecialty = () => {
+    if (this.props.history) {
+      this.props.history.push(`/system/specialty-create`);
+    }
   };
 
   // handleFilterSpecialties = async () => {
@@ -184,7 +199,7 @@ class ManageSpecialty extends Component {
         <div class="row">
           <div class="col-12 text-right mb-16">
             <button type="submit" class="btn btn-primary pointer mr-5"
-              onClick={() => { this.props.navigate(`/admin-dashboard/manage-specialty/create`, { replace: true }); }}
+              onClick={() => { this.toCreateSpecialty() }}
             ><i class="fas fa-plus-circle mr-5"></i><FormattedMessage id="manage-user.btn-create" /></button>
           </div>
         </div>
@@ -209,7 +224,7 @@ class ManageSpecialty extends Component {
                     <td class="text-right" colspan="2">
                       <button
                         className="btn-edit"
-                        onClick={() => { this.props.navigate(`/admin-dashboard/manage-specialty/edit/${specialty.id}`, { replace: true }); }}
+                        onClick={() => { this.toEditSpecialty(specialty.id) }}
                       >
                         <i className="fas fa-pencil-alt"></i>
                       </button>
@@ -240,5 +255,5 @@ const mapDispatchToProps = (dispatch) => {
   return {};
 };
 
-//export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty));
-export default connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty);
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty));

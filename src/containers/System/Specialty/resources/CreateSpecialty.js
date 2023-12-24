@@ -6,8 +6,9 @@ import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { LANGUAGES, CRUD_ACTIONS, CommonUtils } from "../../../../utils";
-import { createNewSpecialty } from "../../../../services/userService";
+import { createNewSpecialty } from "../../../../services/specialtyService";
 import { toast } from "react-toastify";
+
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -22,7 +23,7 @@ class CreateSpecialty extends Component {
     };
   }
 
-  async componentDidMount() {}
+  async componentDidMount() { }
 
   async componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.language !== prevProps.language) {
@@ -56,20 +57,20 @@ class CreateSpecialty extends Component {
     }
   };
 
-  chechValidateInput = ()=>{
-    let {language} = this.props;
-    let arrCheck=["name","imageBase64","descriptionHTML","descriptionMarkdown"]
-    let copyState={...this.state}
-    for(let i=0;i<arrCheck.length;i++){
-        if(!copyState[arrCheck[i]]){
-            if(language=="en"){
-                toast.error("Missing require parameters!");
-            }else{
-                toast.error("Thiếu thông tin chuyên khoa!");
-            }
+  chechValidateInput = () => {
+    let { language } = this.props;
+    let arrCheck = ["name", "imageBase64", "descriptionHTML", "descriptionMarkdown"]
+    let copyState = { ...this.state }
+    for (let i = 0; i < arrCheck.length; i++) {
+      if (!copyState[arrCheck[i]]) {
+        if (language == "en") {
+          toast.error("Missing require parameters!");
+        } else {
+          toast.error("Thiếu thông tin chuyên khoa!");
+        }
 
-            return false
-        } 
+        return false
+      }
     }
     return true;
   }
@@ -77,37 +78,36 @@ class CreateSpecialty extends Component {
 
   handleSaveNewSpecialty = async () => {
     let check = this.chechValidateInput();
-    if(!check) return;
+    if (!check) return;
 
-    let {language} = this.props;
+    let { language } = this.props;
     let res = await createNewSpecialty(this.state);
 
-    if (res && res.errCode === 0) {
-        if(language=="en"){
-            toast.success("Add new specialty successfully!");
-        }else{
-            toast.success("Thêm chuyên khoa thành công!");
-        }
-     
+    if (res && res.code === 200 && res.data) {
+      if (language == "en") {
+        toast.success("Add new specialty successfully!");
+      } else {
+        toast.success("Thêm chuyên khoa thành công!");
+      }
+
       this.setState({
         name: "",
         imageBase64: "",
         descriptionHTML: "",
         descriptionMarkdown: "",
       });
+      setTimeout(function () { window.location.href = '/system/manage-specialty' }, 1000);
     } else {
-        if(language=="en"){
-            toast.error("Something wrongs!");
-        }else{
-            toast.error("Lỗi!");
-        }
+      if (language == "en") {
+        toast.error("Something wrongs!");
+      } else {
+        toast.error("Lỗi!");
+      }
     }
-
-    setTimeout(function(){ window.location.href = '/admin-dashboard/manage-specialty' }, 1000);
   };
 
   render() {
-    let {language}=this.props;
+    let { language } = this.props;
 
     return (
       <div className="manage-specialty-container">
@@ -144,7 +144,7 @@ class CreateSpecialty extends Component {
               className="btn btn-primary mt-10"
               onClick={() => this.handleSaveNewSpecialty()}
             >
-              {language==="en" ? "Create" : "Thêm"}
+              {language === "en" ? "Create" : "Thêm"}
             </button>
           </div>
         </div>
