@@ -61,12 +61,11 @@
     .section-body {
         .section-customize {
             .bg-img {
-                width: 280px;
-                height: 170px;
+                width: 310px;
+                height: 190px;
                 background-position: center center;
                 background-repeat: no-repeat;
                 background-size: cover;
-                background-color: #eee;
                 cursor: pointer;
 
                 &.section-specialty {
@@ -74,7 +73,7 @@
                 }
 
                 &.section-medical-facility {
-                    background-image: url("../../assets/medical-facility/benh-vien-thu-cuc-1.jpg");
+                    //background-image: url("../../assets/medical-facility/benh-vien-thu-cuc-1.jpg");
                 }
 
                 &.section-outstanding-doctor {

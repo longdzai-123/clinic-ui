@@ -22,6 +22,11 @@ class OutStandingDoctor extends Component {
     }
   }
 
+  handleOnClickSeeMoreDoctor = () => {
+    if (this.props.history) {
+      this.props.history.push(`/list-oustanding-doctor`);
+    }
+  };
 
   componentDidMount() {
     this.props.loadTopDoctors(10);
@@ -41,7 +46,9 @@ class OutStandingDoctor extends Component {
         <div className='section-container'>
           <div className="section-header">
             <span className='title-section'><FormattedMessage id="homepage.outstanding-doctor" /></span>
-            <button className='btn-section'><FormattedMessage id="homepage.more-infor" /></button>
+            <button className='btn-section' onClick={() => this.handleOnClickSeeMoreDoctor()}>
+              <FormattedMessage id="homepage.more-infor" />
+            </button>
           </div>
           <div className="section-body">
             <Slider {...this.props.settings}>
@@ -50,8 +57,8 @@ class OutStandingDoctor extends Component {
                 if (item.image) {
                   imageBase64 = item.image;
                 }
-                let nameVi = `${item.allCodesDto.valueVi}, ${item.lastName} ${item.firstName}`;
-                let nameEn = `${item.allCodesDto.valueEn}, ${item.firstName} ${item.lastName}`;
+                let nameVi = `${item.valueVi}, ${item.lastName} ${item.firstName}`;
+                let nameEn = `${item.valueEn}, ${item.firstName} ${item.lastName}`;
                 return (
                   <div className='section-customize'
                     key={index}
@@ -67,7 +74,7 @@ class OutStandingDoctor extends Component {
                       </div>
                       <div className='position text-center'>
                         <div>{language === LANGUAGES.VI ? nameVi : nameEn}</div>
-                        <div>Cu Trong Xoay</div>
+                        <div>{item.nameSpecialty}</div>
                       </div>
                     </div>
                   </div>

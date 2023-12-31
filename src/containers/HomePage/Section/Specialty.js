@@ -15,7 +15,7 @@ class Specialty extends Component {
         };
     }
     async componentDidMount() {
-        let res = await getAllSpecialtyLimit(8);
+        let res = await getAllSpecialtyLimit(10);
         if (res && res.code === 200 && res.data) {
             this.setState({
                 dataSpecialty: res.data ? res.data : [],
@@ -27,19 +27,9 @@ class Specialty extends Component {
             this.props.history.push(`/detail-specialty/${item.id}`);
         }
     };
-    // handleClickSeeMoreSpecialty = () => {
-    //     this.props.history.push(`/list-specialty`);
-    // };
-
-    // handleLoadMore = async () => {
-    //     let total = this.state.dataSpecialty.length + 4;
-    //     let res = await getAllSpecialtyLimit(total)
-    //     if (res && res.code === 200 && res.data) {
-    //         this.setState({
-    //             dataSpecialty: res.data ? res.data : [],
-    //         });
-    //     }
-    // }
+    handleClickSeeMoreSpecialty = () => {
+        this.props.history.push(`/list-specialty`);
+    };
 
     render() {
         let { dataSpecialty } = this.state;

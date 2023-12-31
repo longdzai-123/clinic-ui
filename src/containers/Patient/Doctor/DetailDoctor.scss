@@ -7,13 +7,14 @@
 
     .content-left {
       width: 20%;
-
       background: center center no-repeat;
       width: 120px;
       height: 120px;
       border-radius: 50%;
       margin: 10px 20px;
+      background-size: cover;
     }
+
     .content-right {
       width: 80%;
 
@@ -26,6 +27,7 @@
         font-weight: 600;
         padding-top: 15px;
       }
+
       .down {
         padding-top: 10px;
       }
@@ -41,10 +43,12 @@
     .content-left {
       width: 50%;
     }
+
     .content-right {
       width: 50%;
     }
   }
+
   .detail-infor-doctor {
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
@@ -54,6 +58,7 @@
     h3 {
       font-size: 17px;
     }
+
     img {
       width: 100%;
     }

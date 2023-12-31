@@ -1,24 +1,26 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { FormattedMessage } from "react-intl";
-import "../ManageSpecialty.scss";
+import "../ManageClinic.scss";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { LANGUAGES, CRUD_ACTIONS, CommonUtils } from "../../../../utils";
-import { createNewSpecialty } from "../../../../services/userService";
-import { getSpecialtyById, updateSpecialty } from "../../../../services/specialtyService";
+// import { createNewClinic } from "../../../../services/userService";
+import { updateClinic, getClinicById } from "../../../../services/clinicService";
 import { toast } from "react-toastify";
 import Lightbox from "react-image-lightbox";
+import { withRouter } from "react-router";
 import "react-image-lightbox/style.css"; // This only needs to be imported once in your app
-import { useParams } from 'react-router-dom';
+
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-class EditSpecialty extends Component {
+class EditClinic extends Component {
     constructor(props) {
         super(props);
         this.state = {
             name: "",
+            address: "",
             imageBase64: "",
             descriptionHTML: "",
             descriptionMarkdown: "",
@@ -28,16 +30,17 @@ class EditSpecialty extends Component {
     }
 
     async componentDidMount() {
-        await this.getSpecialtyDetail()
+        await this.getInfoClinic()
     }
 
-    getSpecialtyDetail = async () => {
+    async getInfoClinic() {
         if (this.props.match && this.props.match.params && this.props.match.params.id) {
-            let specialtyId = this.props.match.params.id
-            let res = await getSpecialtyById(specialtyId);
+            let clinicId = this.props.match.params.id
+            let res = await getClinicById(clinicId);
             if (res && res.code === 200 && res.data) {
                 this.setState({
                     name: res.data.name,
+                    address: res.data.address,
                     imageBase64: res.data.image,
                     descriptionHTML: res.data.descriptionHTML,
                     descriptionMarkdown: res.data.descriptionMarkdown,
@@ -45,6 +48,22 @@ class EditSpecialty extends Component {
                 })
             }
         }
+
+        // let { clinicId } = this.props.params
+        // let res = await getClinicById({ id: clinicId })
+        // if (res && res.errCode === 0 && res.data) {
+        //     console.log("res", res.data)
+        //     let objectUrl = new Buffer(res.data.image, "base64").toString("binary");
+
+        //     this.setState({
+        //         name: res.data.name,
+        //         address: res.data.address,
+        //         imageBase64: res.data.image,
+        //         descriptionHTML: res.data.descriptionHTML,
+        //         descriptionMarkdown: res.data.descriptionMarkdown,
+        //         previewImgURL: objectUrl
+        //     })
+        // }
     }
 
     openPreviewImage = () => {
@@ -80,6 +99,7 @@ class EditSpecialty extends Component {
         if (file) {
             let base64 = await CommonUtils.getBase64(file);
             let objectUrl = URL.createObjectURL(file);
+
             this.setState({
                 imageBase64: base64,
                 previewImgURL: objectUrl
@@ -87,36 +107,33 @@ class EditSpecialty extends Component {
         }
     };
 
-    handleSaveNewSpecialty = async () => {
-        let specialtyId = this.props.match.params.id
+    handleSaveNewClinic = async () => {
+        let clinicId = this.props.match.params.id
         let { language } = this.props;
-
-        let res = await updateSpecialty({
-            id: specialtyId,
+        let res = await updateClinic({
+            id: clinicId,
             name: this.state.name,
+            address: this.state.address,
             image: this.state.imageBase64,
             descriptionHTML: this.state.descriptionHTML,
-            descriptionMarkdown: this.state.descriptionMarkdown
+            descriptionMarkdown: this.state.descriptionMarkdown,
         });
 
         if (res && res.code === 200 && res.data) {
-            if (language === "en") {
-                toast.success("Update specialty succeed!");
+            if (language == "en") {
+                toast.success("Update new hospital successfully!");
             } else {
-                toast.success("Cập nhật chuyên khoa thành công!");
+                toast.success("Cập nhật bệnh viện thành công!");
             }
-
-            await this.getSpecialtyDetail();
-            setTimeout(function () { window.location.href = '/system/manage-specialty' }, 1000);
-
+            await this.getInfoClinic()
+            setTimeout(function () { window.location.href = '/system/manage-clinic'; }, 2000);
         } else {
-            if (language === "en") {
+            if (language == "en") {
                 toast.error("Something wrongs!");
             } else {
                 toast.error("Lỗi!");
             }
-
-            await this.getSpecialtyDetail();
+            await this.getInfoClinic()
         }
 
 
@@ -124,14 +141,13 @@ class EditSpecialty extends Component {
 
     render() {
         let { language } = this.props;
-
         return (
             <div className="manage-specialty-container">
-                <div className="ms-title"><FormattedMessage id="admin.manage-specialty.title-edit" /></div>
+                <div className="ms-title"><FormattedMessage id={"admin.manage-clinic.title-edit"} /></div>
 
                 <div className="add-new-specialty row">
                     <div className="col-6 form-group">
-                        <label><FormattedMessage id="admin.manage-specialty.specialty-name" /></label>
+                        <label><FormattedMessage id={"admin.manage-clinic.hospital-name"} /></label>
                         <input
                             className="form-control"
                             type="text"
@@ -140,9 +156,9 @@ class EditSpecialty extends Component {
                         />
                     </div>
                     <div className="col-6 form-group">
-                        <label><FormattedMessage id="admin.manage-specialty.specialty-avatar" /></label>
+                        <label><FormattedMessage id={"admin.manage-clinic.hospital-avatar"} /></label>
                         <div
-                            className="preview-image"
+                            class="preview-image"
                             style={{
                                 backgroundImage: `url(${this.state.previewImgURL})`,
                                 width: "100px",
@@ -156,6 +172,17 @@ class EditSpecialty extends Component {
                             onChange={(event) => this.handleOnChangeImage(event)}
                         />
                     </div>
+
+                    <div className="col-6 form-group">
+                        <label><FormattedMessage id={"admin.manage-clinic.hospital-address"} /></label>
+                        <input
+                            className="form-control"
+                            type="text"
+                            value={this.state.address}
+                            onChange={(event) => this.handleOnChangeInput(event, "address")}
+                        />
+                    </div>
+
                     <div className="col-12">
                         <MdEditor
                             style={{ height: "300px" }}
@@ -166,10 +193,10 @@ class EditSpecialty extends Component {
                     </div>
                     <div className="col-12">
                         <button
-                            className="btn btn-primary mt-10"
-                            onClick={() => this.handleSaveNewSpecialty()}
+                            className="btn btn-primary mt-30"
+                            onClick={() => this.handleSaveNewClinic()}
                         >
-                            {language === "en" ? "Update" : "Cập nhật"}
+                            {language == "en" ? "Update" : "Cập nhật"}
                         </button>
                     </div>
                 </div>
@@ -182,7 +209,6 @@ class EditSpecialty extends Component {
                         })}
                     />
                 )}
-
 
             </div>
         );
@@ -197,4 +223,4 @@ const mapDispatchToProps = (dispatch) => {
     return {};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditSpecialty);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditClinic));

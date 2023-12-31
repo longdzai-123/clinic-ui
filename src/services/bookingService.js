@@ -2,7 +2,9 @@ import { httpRequest } from "../axios";
 
 export const savePatientBookAppointment = (bookingData) => {
     let data = JSON.stringify({
-        "doctorId": bookingData.doctorId,
+        "user": {
+            "id": bookingData.doctorId
+        },
         "email": bookingData.email,
         "date": bookingData.date,
         "timeType": bookingData.timeType,
