@@ -16,4 +16,56 @@ div._loading_overlay_wrapper {
         text-align: center;
     }
 
+
+
+}
+
+.create-remedy-body {
+    padding: 0 20px;
+    margin-bottom: 30px;
+
+    .table-create-remedy {
+        margin-top: 20px;
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 5px;
+            text-align: left;
+        }
+
+        th {
+            padding: 5px;
+            text-align: left;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .mp-btn-confirm {
+            margin-right: 10px;
+            height: 30px;
+            border-radius: 3px;
+            background: orange;
+        }
+
+        .mp-btn-cancel {
+            margin-right: 10px;
+            height: 30px;
+            border-radius: 3px;
+            background: red;
+        }
+    }
 }

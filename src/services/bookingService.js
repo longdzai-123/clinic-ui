@@ -83,7 +83,7 @@ export const getBookingById = (id) => {
     let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `/booking/${id}`,
+        url: `/bookings/${id}`,
     };
     return httpRequest.request(config)
         .then((response) => {

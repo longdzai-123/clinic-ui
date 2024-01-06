@@ -1,118 +1,148 @@
-import { useRef, useState, useEffect } from "react";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 import { FormattedMessage } from "react-intl";
 import "./CreateRemedy.scss";
+import * as actions from "../../../store/actions";
+import Select from "react-select";
+
 
 import { toast } from "react-toastify";
 import moment from "moment";
 import localization from "moment/locale/vi"; //su dung chung cho cai mac dinh la tieng viet
-import { CommonUtils } from "../../../utils";
+import { LANGUAGES, CommonUtils } from "../../../utils";
 import {
   filterDrugs
 } from "../../../services/drugService";
 import { getBookingById, postCreateRemedy } from "../../../services/bookingService";
-
-import { useParams, useNavigate } from "react-router-domv6";
-import { useDispatch, useSelector } from "react-redux";
 import LoadingOverlay from "react-loading-overlay";
 import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
+import { create } from "lodash";
 
-export default function CreateRemedy() {
-  const [email, setEmail] = useState("");
-  const [listMedicine, setListMedicine] = useState("");
-  const [desciption, setDesciption] = useState("");
-  const [patientName, setPatientName] = useState("");
-  const [queryDrug, setQueryDrug] = useState("");
-  const [drugs, setDrugs] = useState([]);
-  const [listSeletedDrugs, setListSeletedDrugs] = useState([]);
-  const [listFilterDrugs, setListFilterDrugs] = useState([]);
-  const [units, setUnits] = useState([
-    { key: "pill", valueVi: "Viên", valueEn: "Pill" },
-    { key: "package", valueVi: "Gói", valueEn: "Package" },
-    { key: "bottle", valueVi: "Chai", valueEn: "Bottle" },
-    { key: "tube", valueVi: "Ống", valueEn: "Tube" },
-    { key: "set", valueVi: "Bộ", valueEn: "Set" },
-  ]);
-  const [isShowLoading, setIsShowLoading] = useState(false);
-  const [doctorId, setDoctorId] = useState("");
-  const [patientId, setPatientId] = useState("");
-  const [date, setDate] = useState("");
-  const [token, setToken] = useState("");
-  const [timeType, setTimeType] = useState("");
-  const [doctorName, setDoctorName] = useState("");
-  const [reason, setReason] = useState("");
+class CreateRemedy extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      desciption: "",
+      patientName: "",
+      drugs: [],
+      listSeletedDrugs: [],
+      selectedDrug: {},
+      isShowLoading: false,
+      doctorId: "",
+      patientId: "",
+      date: "",
+      token: "",
+      timeType: "",
+      doctorName: "",
+      reason: "",
+      remedyDetails: {},
+      listRemedyDetails: [],
+      amount: 0,
+      description_usage: ""
 
-  const { id } = useParams();
-
-  const { isLoggedIn, userInfo, language } = useSelector((state) => ({
-    isLoggedIn: state.user.isLoggedIn,
-    userInfo: state.user.userInfo,
-    language: state.app.language,
-  }));
-
-  const handleRebuildDrugsList = (drugs) => {
-    if (!Array.isArray(drugs)) {
-      // Nếu không phải mảng, bạn có thể xử lý hoặc báo lỗi tùy thuộc vào yêu cầu của bạn
-      console.error("Input is not an array");
-      return []; // hoặc return drugs; hoặc thực hiện xử lý phù hợp
-    }
-    return drugs.map((drug) => {
-      drug.description_usage = ""
-      drug.unit = "chooseUnits"
-      drug.amount = 0
-      return drug;
-    })
+    };
   }
 
-  useEffect(async () => {
-    let res = await filterDrugs("")
+  async componentDidMount() {
+    this.props.getListDrugs();
+    await this.getDataPatient();
+  }
 
-    let rebuildDrugs = [];
-    if (res) rebuildDrugs = handleRebuildDrugsList(res)
-
-    setDrugs(rebuildDrugs)
-    if (rebuildDrugs) setListFilterDrugs(rebuildDrugs)
-    let patientInfo = await getBookingById(id)
-    if (patientInfo && patientInfo.data && patientInfo.data.patientName && patientInfo.data.patientData.email) {
-      console.log("patientInfo", patientInfo)
-      setEmail(patientInfo.data.patient.email)
-      setPatientName(patientInfo.data.patientName)
-      setDoctorId(patientInfo.data.doctorId)
-      setPatientId(patientInfo.data.patientId)
-      setDate(patientInfo.data.date)
-      setToken(patientInfo.data.token)
-      setTimeType(patientInfo.data.timeType)
-      let name = (userInfo.lastName ? userInfo.lastName : "") + " " + (userInfo.firstName ? userInfo.firstName : "")
-      setDoctorName(name)
-      setReason(patientInfo.data.patientReason)
+  getDataPatient = async () => {
+    if (this.props.match && this.props.match.params && this.props.match.params.id) {
+      let bookingId = this.props.match.params.id;
+      let patientInfo = await getBookingById(bookingId)
+      if (patientInfo && patientInfo.data) {
+        console.log("patientInfo", patientInfo)
+        this.setState({
+          email: patientInfo.data.patient.email,
+          patientName: patientInfo.data.patientName,
+          isShowLoading: false,
+          doctorId: patientInfo.data.doctor.id,
+          patientId: patientInfo.data.patient.id,
+          date: patientInfo.data.date,
+          token: patientInfo.data.token,
+          timeType: patientInfo.data.timeType,
+          doctorName: "",
+          reason: patientInfo.data.patientReason,
+        });
+      }
     }
-  }, []);
+  }
+
+  buildDataInputSelect = (inputData) => {
+    let result = [];
+    if (inputData && inputData.length > 0) {
+      inputData.map((item, index) => {
+        let object = {};
+        object.label = item.name;
+        object.value = item.id;
+        result.push(object);
+      });
+    }
+    return result;
+  };
+
+  handleChangeSelectDrugs = async (selectedOption) => {
+    this.setState({ selectedDrug: selectedOption });
+  };
 
 
-  const handleOnChangeEmail = (event) => {
+  async componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.language !== prevProps.language) {
+    }
+    if (prevProps.drugs !== this.props.drugs) {
+      let dataSelect = this.buildDataInputSelect(this.props.drugs);
+      this.setState({
+        drugs: dataSelect,
+      });
+    }
+    if (prevState.listRemedyDetails !== this.state.listRemedyDetails) {
+      this.setState({
+        listRemedyDetails: this.state.listRemedyDetails,
+      });
+    }
+  }
+
+
+  handleOnChangeListMedicine = (event) => {
     this.setState({
-      email: event.target.value,
+      listMedicine: event.target.value,
     });
   };
 
-  const handleOnChangeListMedicine = (event) => {
-    setListMedicine(event.target.value)
+  handleOnChangeDescription = (event) => {
+    this.setState({
+      description_usage: event.target.value
+    });
   };
 
-  const handleOnChangeDescription = (event) => {
-    setDesciption(event.target.value)
+  handleOnchangeAmountDrug = (event) => {
+    this.setState({
+      amount: event.target.value
+    });
   };
 
-  const handleOnChangeImage = async (event) => {
-    let data = event.target.files;
-    let file = data[0];
-    if (file) {
-      let base64 = await CommonUtils.getBase64(file);
-
-      this.setState({
-        imgBase64: base64,
-      });
+  handleCreateRemedyDetails = () => {
+    let remedyDetails = {
+      drugIdSelect: this.state.selectedDrug.value,
+      drugNameSelect: this.state.selectedDrug.label,
+      amount: this.state.amount,
+      description: this.state.description_usage
     }
-  };
+
+    let listRemedyDetails = [...this.state.listRemedyDetails]
+    listRemedyDetails.push(remedyDetails)
+    this.setState({
+      listRemedyDetails: listRemedyDetails,
+    });
+    this.setState({
+      selectedDrug: "",
+      description_usage: ""
+    })
+    console.log(this.state.listRemedyDetails)
+  }
 
   // const handleCreateRemedyImage = () => {
   //   createRemedyImage();
@@ -156,228 +186,148 @@ export default function CreateRemedy() {
   //   setIsShowLoading(false)
   // };
 
-  const handlePushDrugToList = (drug) => {
-    let temp = [...listSeletedDrugs];
 
-    temp.push(drug)
-
-    setListSeletedDrugs(temp)
-
-    if (temp) console.log("temp", temp)
-  }
-
-  const removeDrugFromTheList = (drugId) => {
-    let temp = [...listSeletedDrugs];
-
-    temp = temp.filter((drug) => drug.id != drugId)
-
-    setListSeletedDrugs(temp)
-  }
-
-  const handleOnchangeDescriptionUsageDrug = (event, drugId) => {
-    let temp = [...listSeletedDrugs];
-
-    temp.map((drug) => {
-      if (drug.id == drugId) {
-        drug.description_usage = event.target.value
-      }
-
-      return drug;
-    })
-
-    setListSeletedDrugs(temp)
-
-    console.log(listSeletedDrugs)
-  }
-
-  const handleOnchangeUnitDrug = (event, drugId) => {
-    let temp = [...listSeletedDrugs];
-
-    temp.map((drug) => {
-      if (drug.id == drugId) {
-        drug.unit = event.target.value
-      }
-
-      return drug;
-    })
-
-    setListSeletedDrugs(temp)
-
-    console.log(listSeletedDrugs)
-  }
-
-  const handleOnchangeAmountDrug = (event, drugId) => {
-    let temp = [...listSeletedDrugs];
-
-    temp.map((drug) => {
-      if (drug.id == drugId) {
-        drug.amount = event.target.value
-      }
-
-      return drug;
-    })
-
-    setListSeletedDrugs(temp)
-
-    console.log(listSeletedDrugs)
-  }
-
-  const handleFilterDrugs = async () => {
-    let res = await filterDrugs({ name: queryDrug })
-
-    let rebuildDrugs = [];
-    if (res) rebuildDrugs = handleRebuildDrugsList(res)
-
-    setDrugs(rebuildDrugs)
-
-    if (rebuildDrugs) setListFilterDrugs(rebuildDrugs)
-  }
-
-  const handleResetDrugs = async () => {
-    setQueryDrug("")
-    let res = await filterDrugs({ name: "" })
-
-    let rebuildDrugs = [];
-    if (res) rebuildDrugs = handleRebuildDrugsList(res)
-
-    setDrugs(rebuildDrugs)
-
-    if (rebuildDrugs) setListFilterDrugs(rebuildDrugs)
-  }
-
-  return (
-    <LoadingOverlay
-      active={isShowLoading}
-      spinner={<ClimbingBoxLoader color={"#86e7d4"} size={15} />}
-    >
-      <div className="create-remedy-container">
-        <div className="m-s-title">
-          <FormattedMessage id={"admin.manage-drug.create-prescription"} />
+  render() {
+    let { isShowLoading, email, patientName, listMedicine, listSeletedDrugs, units, queryDrug, drugs, listFilterDrugs, desciption, listRemedyDetails } = this.state
+    let { language } = this.props
+    console.log(drugs)
+    return (
+      <LoadingOverlay
+        active={isShowLoading}
+        spinner={< ClimbingBoxLoader color={"#86e7d4"} size={15} />}
+      >
+        <div className="create-remedy-container">
+          <div className="m-s-title">
+            <FormattedMessage id={"admin.manage-drug.create-prescription"} />
+          </div>
         </div>
-      </div>
-      <div className="row">
-        <div class="col-8">
-          <div class="row">
-            <div className="col-6 form-group">
-              <label><FormattedMessage id={"admin.manage-drug.email-patient"} /></label>
-              <input
-                className="form-control"
-                type="email"
-                value={email}
-                onChange={(event) => handleOnChangeEmail(event)}
-              />
+        <div className="row">
+          <div className="col-12">
+            <div className="row">
+              <div className="col-3 form-group">
+                <label><FormattedMessage id={"admin.manage-drug.email-patient"} /></label>
+                <input
+                  className="form-control"
+                  type="email"
+                  value={email}
+                  readonly="true"
+                />
+              </div>
+              <div className="col-3 form-group">
+                <label><FormattedMessage id={"admin.manage-drug.name-patient"} /></label>
+                <input
+                  className="form-control"
+                  type="text"
+                  value={patientName}
+                  readonly="true"
+                />
+              </div>
+              <div className="col-3 form-group">
+                <label>
+                  <FormattedMessage id={"admin.manage-drug.prescription"} />
+                </label>
+                <Select
+                  value={this.state.selectedDrug}
+                  onChange={(e) => this.handleChangeSelectDrugs(e)}
+                  options={drugs}
+                />
+              </div>
+              <div className="col-3 form-group">
+                <label>
+                  Số lượng
+                </label>
+                <input
+                  className="form-control"
+                  type="number"
+                  onChange={(e) => this.handleOnchangeAmountDrug(e)}
+                />
+              </div>
             </div>
-            <div className="col-6 form-group">
-              <label><FormattedMessage id={"admin.manage-drug.name-patient"} /></label>
-              <input
-                className="form-control"
-                type="text"
-                value={patientName}
-                onChange={(event) => this.handleOnChangeEmail(event)}
-              />
-            </div>
-            <div className="col-12 form-group">
-              <label><FormattedMessage id={"admin.manage-drug.prescription"} /></label>
-              <textarea
-                className="form-control"
-                aria-label="With textarea"
-                value={listMedicine}
-                onChange={(event) => handleOnChangeListMedicine(event)}
-              ></textarea>
-            </div>
+          </div>
+          <div class="col-12 form-group">
+            <label>Hướng dẫn sử dụng thuốc</label>
+            <textarea
+              className="form-control"
+              aria-label="With textarea"
+              value={this.state.description_usage}
+              onChange={(event) => this.handleOnChangeDescription(event)}
+            ></textarea>
+          </div>
+        </div>
 
-            <div class="col-12">
-              <div class="row">
-                {
-                  listSeletedDrugs.map((drug) => {
-                    console.log("drug", drug)
+        <button
+          onClick={() => this.handleCreateRemedyDetails()} type="button" class="btn btn-primary"
+        >
+          <FormattedMessage id={"admin.manage-drug.btn-create"} />
+        </button>
+        <div className="create-remedy-body">
+          <div className="col-12 table-create-remedy">
+            <table>
+              <tbody>
+                <tr>
+                  <th>#</th>
+                  <th>tên thuốc</th>
+                  <th>số lượng</th>
+                  <th>hướng dẫn</th>
+                  <th>hành động</th>
+
+                </tr>
+                {listRemedyDetails && listRemedyDetails.length > 0 ? (
+                  listRemedyDetails.map((item, index) => {
                     return (
-                      <div class="col-12 form-group">
-                        <div class="row align-item-center text-center">
-                          <div class="col-4"> <input readonly type="text" value={drug.name} class="form-control" placeholder="" /></div>
-                          <div class="col-auto">
-                            <select class="form-control" onChange={(event) => handleOnchangeUnitDrug(event, drug.id)} value={drug.unit}>
-                              <option value="chooseUnits">{language == "en" ? "Units" : "Đơn vị"}</option>
-                              {
-                                language == "vi" ? units.map((unit) => {
-                                  return (<option value={unit.key}>{unit.valueVi}</option>)
-                                }) : units.map((unit) => {
-                                  return (<option value={unit.key}>{unit.valueEn}</option>)
-                                })
-                              }
-                            </select>
-                          </div>
-                          <div class="col-1"> <input onChange={(event) => handleOnchangeAmountDrug(event, drug.id)} type="text" value={drug.amount} class="form-control" /></div>
-                          <div class="col-4"> <input onChange={(event) => handleOnchangeDescriptionUsageDrug(event, drug.id)} type="text" value={drug.desciption} class="form-control" placeholder={language == "en" ? "Enter desription usage" : "Nhập hướng dẫn sử dụng"} /></div>
-                          <div class="col-1 d-flex align-items-center"><i onClick={() => removeDrugFromTheList(drug.id)} class="fas fa-trash pointer text-red"></i></div>
-                        </div>
-                      </div>
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{item.drugNameSelect}</td>
+                        <td>{item.amount}</td>
+                        <td>{item.description}</td>
+                        <td>
+                          <button
+                            className="btn btn-danger"
+                            onClick={() => this.handleBtnCancel(item)}
+                          >
+                            Xóa
+                          </button>
+                        </td>
+                      </tr>
                     );
                   })
-                }
-              </div>
-            </div>
-
+                ) : (
+                  <tr>
+                    <td colSpan="9" style={{ textAlign: "center" }}>
+                      {language === LANGUAGES.VI ? "Không có đơn thuốc" : ""}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="col-4">
-          <div class="row">
-            <div class="col-12"><FormattedMessage id={"admin.manage-drug.drug-list"} />
-              <input className="form-control" type="text"
-                value={queryDrug}
-                onChange={(event) => setQueryDrug(event.target.value)}
-              />
-              <div class="mt-10">
-                <button type="button" class="btn btn-primary mr-5"
-                  onClick={() => handleFilterDrugs()}
-                ><FormattedMessage id="medical-history.apply" /></button>
-                <button type="button" class="btn btn-primary"
-                  onClick={() => handleResetDrugs()}
-                ><FormattedMessage id="medical-history.reset" /></button>
-              </div>
-              <ul class="list-group mt-10" style={{ overflowY: "scroll", maxHeight: "400px" }}>
-                {
-                  listFilterDrugs.map((drug) => {
-                    return (
-                      <li onClick={() => handlePushDrugToList(drug)} class="list-group-item list-group-item-action d-flex justify-content-between align-items-center pointer"><span>{drug.name}</span> <i class="text-primary fas fa-plus-circle"></i></li>
-                    )
-                  })
-                }
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 form-group">
-          <label><FormattedMessage id={"admin.manage-drug.more-descriptive-information"} /></label>
-          <textarea
-            className="form-control"
-            aria-label="With textarea"
-            value={desciption}
-            onChange={(event) => handleOnChangeDescription(event)}
-          ></textarea>
-        </div>
-      </div>
 
-      <button
-      //onClick={() => handleCreateRemedyImage()} type="button" class="btn btn-primary"
-      >
-        <FormattedMessage id={"admin.manage-drug.btn-create"} />
-      </button>
+        <button
+          onClick={() => this.handleCreateRemedy()} type="button" class="btn btn-primary"
+        >
+          Tạo đơn thuốc
+        </button>
 
-    </LoadingOverlay>
-  );
-  // }
+
+      </LoadingOverlay >
+    );
+  }
 }
 
-// const mapStateToProps = (state) => {
-//   return { language: state.app.language, genders: state.admin.genders };
-// };
+const mapStateToProps = (state) => {
+  return {
+    language: state.app.language,
+    genders: state.admin.genders,
+    drugs: state.admin.allDrugs,
+  };
+};
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {};
-// };
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getListDrugs: () => dispatch(actions.fetchAllDrugs()),
 
-// export default connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(CreateRemedy);
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreateRemedy);

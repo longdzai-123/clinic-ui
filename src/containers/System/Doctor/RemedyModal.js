@@ -92,6 +92,7 @@ class RemedyModal extends Component {
   };
   render() {
     let { isOpenModal, closeRemedyModal, dataModal, sendRemedy } = this.props;
+    let { email } = this.state
 
     return (
       <Modal
@@ -118,7 +119,7 @@ class RemedyModal extends Component {
               <input
                 className="form-control"
                 type="email"
-                value={this.state.email}
+                value={dataModal.email}
                 onChange={(event) => this.handleOnChangeEmail(event)}
               />
             </div>

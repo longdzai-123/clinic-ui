@@ -11,7 +11,7 @@ import {
 } from "../../../services/bookingService";
 import moment from "moment";
 import { LANGUAGES } from "../../../utils";
-//import RemedyModal from "./RemedyModal";
+import RemedyModal from "./RemedyModal";
 //import CreateImageRemedyModal from "./CreateImageRemedyModal";
 import { toast } from "react-toastify";
 import LoadingOverlay from "react-loading-overlay";
@@ -76,9 +76,9 @@ class ManagePatient extends Component {
     let data = {
       doctorId: item.doctorId,
       patientId: item.patientId,
-      email: item.patientData.email,
+      email: item.patient.email,
       timeType: item.timeType,
-      patientName: item.patientData.firstName,
+      patientName: item.patient.firstName,
       imageRemedy: item.imageRemedy,
       token: item.token,
     };
@@ -260,6 +260,8 @@ class ManagePatient extends Component {
     console.log("imageBase64", imageBase64)
 
 
+
+
     console.log("isOpen", this.state.isOpen)
   };
 
@@ -271,6 +273,8 @@ class ManagePatient extends Component {
       dataModal,
       dataModalCreateRemedy,
     } = this.state;
+
+    console.log(dataPatient)
     let { language } = this.props;
 
     return (
@@ -279,12 +283,12 @@ class ManagePatient extends Component {
           active={this.state.isShowLoading}
           spinner={<ClimbingBoxLoader color={"#86e7d4"} size={15} />}
         >
-          {/* <RemedyModal
+          <RemedyModal
             isOpenModal={isOpenRemedyModal}
             dataModal={dataModal}
             closeRemedyModal={this.closeRemedyModal}
             sendRemedy={this.sendRemedy}
-          /> */}
+          />
           {/* <CreateImageRemedyModal
             isOpenCreateImageRemedyModal={isOpenCreateImageRemedyModal}
             dataModalCreateRemedy={dataModalCreateRemedy}
@@ -354,12 +358,25 @@ class ManagePatient extends Component {
                               >
                                 <FormattedMessage id={"manage-patient.send-prescriptions"} />
                               </button>
-                              <button
-                                className="btn btn-info mx-5"
-                                onClick={() => this.handleBtnCreateRemedy(item)}
-                              >
-                                <FormattedMessage id={"manage-patient.create-prescriptions"} />
-                              </button>
+
+                              {item.statusId === 'S2' ?
+                                < button
+                                  className="btn btn-info mx-5"
+                                  onClick={() => this.handleBtnCreateRemedy(item)}
+                                >
+                                  <FormattedMessage id={"manage-patient.create-prescriptions"} />
+                                </button>
+                                :
+                                <button
+                                  className="btn btn-warning mx-5"
+                                //onClick={() => this.handleBtnCreateRemedy(item)}
+                                >
+                                  Xem đơn thuốc
+                                </button>
+                              }
+
+
+
                               <button
                                 className="btn btn-danger"
                                 onClick={() => this.handleBtnCancel(item)}
@@ -390,7 +407,7 @@ class ManagePatient extends Component {
             />
           )}
 
-        </LoadingOverlay>
+        </LoadingOverlay >
       </>
     );
   }
