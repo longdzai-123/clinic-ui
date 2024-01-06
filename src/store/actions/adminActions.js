@@ -3,6 +3,7 @@ import { getAllcode, createNewUserService, getAllUser, deleteUserService, editUs
 import { getAllSpecialty } from "./../../services/specialtyService"
 import { getAllClinic } from "./../../services/clinicService"
 import { toast } from "react-toastify";
+import { filterDrugs } from "./../../services/drugService"
 
 export const fetchGenderStart = () => {
     return async (dispatch, getState) => {
@@ -276,6 +277,30 @@ export const fetchAllDoctors = () => {
             console.log("FETCH_ALL_DOCTORS_FAILED", e);
             dispatch({
                 type: actionTypes.FETCH_ALL_DOCTORS_FAILED,
+            });
+        }
+    };
+};
+
+export const fetchAllDrugs = () => {
+    return async (dispatch, getState) => {
+        try {
+            let response = await filterDrugs("");
+            console.log(response)
+            if (response && response.code === 200) {
+                dispatch({
+                    type: actionTypes.FETCH_ALL_DRUGS_SUCCESS,
+                    dataDrugs: response.data,
+                });
+            } else {
+                dispatch({
+                    type: actionTypes.FETCH_ALL_DRUGS_FAILED,
+                });
+            }
+        } catch (e) {
+            console.log("FETCH_ALL_DOCTORS_FAILED", e);
+            dispatch({
+                type: actionTypes.FETCH_ALL_DRUGS_FAILED,
             });
         }
     };

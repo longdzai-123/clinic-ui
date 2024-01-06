@@ -353,7 +353,7 @@ const mapStateToProps = (state) => {
     language: state.app.language,
     genders: state.admin.genders,
     isLoggedIn: state.user.isLoggedIn,
-    userInfo: state.user.userInfo
+    userInfo: state.user.userInfor
   };
 };
 

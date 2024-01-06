@@ -2,17 +2,21 @@ import { httpRequest } from "../axios";
 
 export const savePatientBookAppointment = (bookingData) => {
     let data = JSON.stringify({
-        "user": {
+        "doctor": {
             "id": bookingData.doctorId
         },
         "email": bookingData.email,
         "date": bookingData.date,
-        "timeType": bookingData.timeType,
+        "timeType": {
+            "keyMap": bookingData.timeType
+        },
         "patientName": bookingData.patientName,
         "patientPhoneNumber": bookingData.phoneNumber,
         "patientAddress": bookingData.address,
         "patientReason": bookingData.reason,
-        "patientGender": bookingData.selectedGender,
+        "patientGender": {
+            "keyMap": bookingData.selectedGender
+        },
         "patientBirthday": bookingData.birthday,
         "timeBooking": bookingData.timeString,
     });
@@ -53,6 +57,38 @@ export const verifyBookAppointment = (token, doctorId) => {
         .then((response) => {
             console.log(response.data)
             return response.data;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
+export const getAllPatientForDoctor = (doctorId, date) => {
+    console.log("check ", doctorId, date)
+    let config = {
+        method: 'get',
+        url: `/bookings?doctorId=${doctorId}&date=${date}`
+    };
+    return httpRequest.request(config)
+        .then((response) => {
+            console.log(response.data)
+            return response.data;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
+export const getBookingById = (id) => {
+    let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `/booking/${id}`,
+    };
+    return httpRequest.request(config)
+        .then((response) => {
+            console.log(response.data)
+            return response.data
         })
         .catch((error) => {
             console.log(error);

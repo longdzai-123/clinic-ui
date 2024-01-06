@@ -78,15 +78,17 @@ class ManageSchedule extends Component {
       currentDate: date[0],
     });
 
+
     let todayDate = moment(moment()._d).format("YYYY/MM/DD");
 
     console.log("todayDate", todayDate)
     console.log("moment(date[0]).format(YYYY/MM/DD)", moment(date[0]).format("YYYY/MM/DD"))
 
     let rangTimeCopy;
-    if (todayDate == moment(date[0]).format("YYYY/MM/DD")) {
+    if (todayDate === moment(date[0]).format("YYYY/MM/DD")) {
       //today
       rangTimeCopy = [...this.state.rangeTime];
+      console.log(rangTimeCopy)
 
       let currentHour = moment().format("HH");
 
@@ -95,6 +97,7 @@ class ManageSchedule extends Component {
       this.setState({
         rangeTime: rangTimeCopy,
       });
+      console.log(rangTimeCopy)
     } else {
       let data = this.props.allScheduleTime;
       if (data && data.length > 0) {

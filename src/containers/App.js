@@ -25,6 +25,7 @@ import VerifyEmail from "./Patient/VerifyEmail";
 import DetailSpecialty from "./Patient/Specialty/DetailSpecialty";
 import ListSpecialty from "./HomePage/SectionList/ListSpecialty";
 import ListOutStandingDoctor from "./HomePage/SectionList/ListOutStandingDoctor";
+import ListMedicalFacility from "./HomePage/SectionList/ListMedicalFacility";
 import DetailClinic from "./Patient/Clinic/DetailClinic";
 
 class App extends Component {
@@ -66,7 +67,7 @@ class App extends Component {
                                     <Route path={path.DETAIL_SPECIALTY} component={DetailSpecialty} />
                                     <Route path={path.DETAIL_CLINIC} component={DetailClinic} />
                                     <Route path={path.LIST_SPECIALTY} component={ListSpecialty} />
-                                    {/* <Route path={path.LIST_MEDICAL_FACILITY} component={ListMedicalFacility} /> */}
+                                    <Route path={path.LIST_MEDICAL_FACILITY} component={ListMedicalFacility} />
                                     <Route path={path.LIST_OUSTANDING_DOCTOR} component={ListOutStandingDoctor} />
                                 </Switch>
                             </CustomScrollbars>

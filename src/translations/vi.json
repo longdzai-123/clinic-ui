@@ -197,7 +197,7 @@
         }
     },
     "manage-patient": {
-        "title": "QUẢN LÝ BỆNH NHẬN",
+        "title": "QUẢN LÝ BỆNH NHÂN",
         "choose-date": "Chọn ngày khám",
         "examination-time": "Thời gian khám",
         "patient-name": "Tên bệnh nhân",

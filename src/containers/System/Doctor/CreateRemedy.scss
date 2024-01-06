@@ -1,0 +1,19 @@
+div._loading_overlay_wrapper {
+    position: unset;
+
+    ._loading_overlay_overlay {
+        z-index: 1000000;
+    }
+}
+
+.create-remedy-container {
+    .m-s-title {
+        text-transform: uppercase;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        font-weight: 600;
+        font-size: 17px;
+        text-align: center;
+    }
+
+}

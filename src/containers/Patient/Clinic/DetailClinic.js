@@ -24,9 +24,9 @@ class DetailClinic extends Component {
     if (this.props.match && this.props.match.params && this.props.match.params.id) {
       let id = this.props.match.params.id;
       let res = await getClinicById(id);
-      if (res && res.errCode === 0) {
+      if (res && res.code === 200 && res.data) {
         let data = res.data;
-
+        console.log(data)
         let arrDoctorId = [];
         if (data && !_.isEmpty(data)) {
           let arr = data.doctorClinic;
@@ -62,7 +62,6 @@ class DetailClinic extends Component {
           <div className="description-specialty">
             {dataDetailClinic && !_.isEmpty(dataDetailClinic) && (
               <>
-                <div>{dataDetailClinic.name}</div>
                 <div //neu khong co thuoc tinh nay se in ra noi dung HTML
                   dangerouslySetInnerHTML={{
                     __html: dataDetailClinic.descriptionHTML,
