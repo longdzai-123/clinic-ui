@@ -15,8 +15,7 @@ class RemedyModal extends Component {
     this.state = {
       email: "",
       imgBase64: "",
-      isShowChooseOtherFile: false,
-      isShowBtnChooseOtherFile: true,
+      description: "",
     };
   }
 
@@ -84,10 +83,9 @@ class RemedyModal extends Component {
     this.props.sendRemedy(this.state);
   };
 
-  handleBtnChooseOtherFile = () => {
+  handleOnChangeDescription = (event) => {
     this.setState({
-      isShowChooseOtherFile: !this.state.isShowChooseOtherFile,
-      isShowBtnChooseOtherFile: !this.state.isShowBtnChooseOtherFile,
+      description: event.target.value
     });
   };
   render() {
@@ -125,29 +123,22 @@ class RemedyModal extends Component {
             </div>
             <div className="col-6 form-group">
               <label><FormattedMessage id={"manage-patient.select-the-prescription-file"} /></label>
-              {this.props.dataModal.imageRemedy &&
-                this.state.isShowBtnChooseOtherFile === true && (
-                  <label><FormattedMessage id={"manage-patient.there-is-a-pre-created-prescription-file"} /></label>
-                )}
-              {this.props.dataModal.imageRemedy &&
-                this.state.isShowBtnChooseOtherFile === true && (
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => this.handleBtnChooseOtherFile()}
-                  >
-                    <FormattedMessage id={"manage-patient.choose-other-file"} />
-                  </button>
-                )}
-              {(this.state.isShowChooseOtherFile === true ||
-                this.props.dataModal.imageRemedy === null) && (
-                  <input
-                    className="form-control-file"
-                    type="file"
-                    onChange={(event) => this.handleOnChangeImage(event)}
-                  />
-                )}
+              <input
+                className="form-control-file"
+                type="file"
+                onChange={(event) => this.handleOnChangeImage(event)}
+              />
             </div>
+          </div>
+          <div class="col-12 form-group my-5">
+            <label>Chuẩn đoán bệnh</label>
+            <textarea
+              className="form-control"
+              aria-label="With textarea"
+              value={this.state.description}
+              onChange={(event) => this.handleOnChangeDescription(event)}
+            >
+            </textarea>
           </div>
         </ModalBody>
         <ModalFooter>

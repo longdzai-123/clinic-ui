@@ -4,7 +4,7 @@ import { FormattedMessage } from "react-intl";
 import "./CreateRemedy.scss";
 import * as actions from "../../../store/actions";
 import Select from "react-select";
-
+import { postSendRemedy } from "../../../services/remedyService";
 
 import { toast } from "react-toastify";
 import moment from "moment";
@@ -25,17 +25,16 @@ class CreateRemedy extends Component {
       email: "",
       desciption: "",
       patientName: "",
+      phoneNumber: "",
+      bookingId: "",
       drugs: [],
-      listSeletedDrugs: [],
       selectedDrug: {},
       isShowLoading: false,
       doctorId: "",
       patientId: "",
       date: "",
-      token: "",
       timeType: "",
       doctorName: "",
-      reason: "",
       remedyDetails: {},
       listRemedyDetails: [],
       amount: 0,
@@ -56,16 +55,15 @@ class CreateRemedy extends Component {
       if (patientInfo && patientInfo.data) {
         console.log("patientInfo", patientInfo)
         this.setState({
+          date: patientInfo.data.date,
           email: patientInfo.data.patient.email,
           patientName: patientInfo.data.patientName,
+          phoneNumber: patientInfo.data.patientPhoneNumber,
+          timeType: patientInfo.data.timeType,
           isShowLoading: false,
           doctorId: patientInfo.data.doctor.id,
           patientId: patientInfo.data.patient.id,
-          date: patientInfo.data.date,
-          token: patientInfo.data.token,
-          timeType: patientInfo.data.timeType,
-          doctorName: "",
-          reason: patientInfo.data.patientReason,
+          bookingId: patientInfo.data.id,
         });
       }
     }
@@ -105,16 +103,14 @@ class CreateRemedy extends Component {
     }
   }
 
-
-  handleOnChangeListMedicine = (event) => {
-    this.setState({
-      listMedicine: event.target.value,
-    });
-  };
-
-  handleOnChangeDescription = (event) => {
+  handleOnChangeDescriptionUsage = (event) => {
     this.setState({
       description_usage: event.target.value
+    });
+  };
+  handleOnChangeDescription = (event) => {
+    this.setState({
+      description: event.target.value
     });
   };
 
@@ -126,8 +122,10 @@ class CreateRemedy extends Component {
 
   handleCreateRemedyDetails = () => {
     let remedyDetails = {
-      drugIdSelect: this.state.selectedDrug.value,
-      drugNameSelect: this.state.selectedDrug.label,
+      drug: {
+        id: this.state.selectedDrug.value,
+        name: this.state.selectedDrug.label
+      },
       amount: this.state.amount,
       description: this.state.description_usage
     }
@@ -137,58 +135,59 @@ class CreateRemedy extends Component {
     this.setState({
       listRemedyDetails: listRemedyDetails,
     });
-    this.setState({
-      selectedDrug: "",
-      description_usage: ""
-    })
     console.log(this.state.listRemedyDetails)
   }
 
-  // const handleCreateRemedyImage = () => {
-  //   createRemedyImage();
-  // };
+  handleBtnDeleteDrug = (item) => {
+    let listRemedyDetails = [...this.state.listRemedyDetails];
+    listRemedyDetails = listRemedyDetails.filter((element) => element !== item);
+    this.setState({
+      listRemedyDetails: listRemedyDetails,
+    });
+  }
+  createRemedy = async (dataChild) => {
+    let dataCreateRemedy = this.state;
+    this.setState({ isShowLoading: true });
 
-  // const createRemedyImage = async () => {
-  //   console.log("reason", reason)
-  //   setIsShowLoading(true)
-
-  //   let res = await postCreateRemedy({
-  //     email: email,
-  //     listMedicine: listMedicine,
-  //     desciption: desciption,
-  //     doctorId: doctorId,
-  //     patientId: patientId,
-  //     timeType: timeType,
-  //     date: date,
-  //     token: token,
-  //     language: language,
-  //     patientName: patientName,
-  //     doctorName: doctorName,
-  //     listSeletedDrugs: listSeletedDrugs,
-  //     patientReason: reason
-  //   });
-
-  //   if (res && res.errCode === 0) {
-  //     setIsShowLoading(false)
-  //     if (language == "en") {
-  //       toast.success("Create Remedy succeed!");
-  //     } else {
-  //       toast.success("Tạo đơn thuốc thành công!");
-  //     }
-  //   } else {
-  //     setIsShowLoading(true)
-  //     if (language == "en") {
-  //       toast.error("Something wrongs...!");
-  //     } else {
-  //       toast.error("Lỗi!");
-  //     }
-  //   }
-  //   setIsShowLoading(false)
-  // };
+    let res = await postSendRemedy({
+      email: dataCreateRemedy.email,
+      phoneNumber: dataCreateRemedy.phoneNumber,
+      doctor: {
+        id: dataCreateRemedy.doctorId
+      },
+      patient: {
+        id: dataCreateRemedy.patientId
+      },
+      booking: {
+        id: dataCreateRemedy.bookingId
+      },
+      timeType: dataCreateRemedy.timeType.keyMap,
+      date: dataCreateRemedy.date,
+      description: dataCreateRemedy.description,
+      remedyDetails: dataCreateRemedy.listRemedyDetails
+    });
+    if (res && res.code === 200) {
+      this.setState({ isShowLoading: false });
+      if (this.props.language == "en") {
+        toast.success("Create Remedy succeed!");
+      } else {
+        toast.success("Tạo đơn thuốc thành công!");
+      }
+      setTimeout(function () { window.location.href = '/doctor/manage-patient' }, 1000);
+    } else {
+      this.setState({ isShowLoading: true });
+      if (this.props.language == "en") {
+        toast.error("Something wrongs...!");
+      } else {
+        toast.error("Lỗi!");
+      }
+    }
+    this.setState({ isShowLoading: false });
+  };
 
 
   render() {
-    let { isShowLoading, email, patientName, listMedicine, listSeletedDrugs, units, queryDrug, drugs, listFilterDrugs, desciption, listRemedyDetails } = this.state
+    let { isShowLoading, email, patientName, drugs, desciption, listRemedyDetails } = this.state
     let { language } = this.props
     console.log(drugs)
     return (
@@ -201,7 +200,7 @@ class CreateRemedy extends Component {
             <FormattedMessage id={"admin.manage-drug.create-prescription"} />
           </div>
         </div>
-        <div className="row">
+        <div className="row my-3">
           <div className="col-12">
             <div className="row">
               <div className="col-3 form-group">
@@ -250,7 +249,7 @@ class CreateRemedy extends Component {
               className="form-control"
               aria-label="With textarea"
               value={this.state.description_usage}
-              onChange={(event) => this.handleOnChangeDescription(event)}
+              onChange={(event) => this.handleOnChangeDescriptionUsage(event)}
             ></textarea>
           </div>
         </div>
@@ -262,28 +261,41 @@ class CreateRemedy extends Component {
         </button>
         <div className="create-remedy-body">
           <div className="col-12 table-create-remedy">
+            <div class="col-12 form-group my-5">
+              <label>Chuẩn đoán bệnh :</label>
+              <textarea
+                className="form-control"
+                aria-label="With textarea"
+                value={this.state.description}
+                onChange={(event) => this.handleOnChangeDescription(event)}
+              >
+              </textarea>
+            </div>
+            <div className="title-remedy">
+              Đơn thuốc
+            </div>
             <table>
               <tbody>
                 <tr>
-                  <th>#</th>
-                  <th>tên thuốc</th>
-                  <th>số lượng</th>
-                  <th>hướng dẫn</th>
-                  <th>hành động</th>
+                  <th style={{ textAlign: "center" }}>#</th>
+                  <th style={{ textAlign: "center" }}>tên thuốc</th>
+                  <th style={{ textAlign: "center" }}>số lượng</th>
+                  <th style={{ textAlign: "center" }}>hướng dẫn</th>
+                  <th style={{ textAlign: "center" }}>hành động</th>
 
                 </tr>
                 {listRemedyDetails && listRemedyDetails.length > 0 ? (
                   listRemedyDetails.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.drugNameSelect}</td>
-                        <td>{item.amount}</td>
-                        <td>{item.description}</td>
-                        <td>
+                        <td style={{ textAlign: "center" }}>{index + 1}</td>
+                        <td style={{ textAlign: "center" }}>{item.drug.name}</td>
+                        <td style={{ textAlign: "center" }}>{item.amount}</td>
+                        <td style={{ textAlign: "center" }}>{item.description}</td>
+                        <td style={{ textAlign: "center" }}>
                           <button
                             className="btn btn-danger"
-                            onClick={() => this.handleBtnCancel(item)}
+                            onClick={() => this.handleBtnDeleteDrug(item)}
                           >
                             Xóa
                           </button>
@@ -294,7 +306,7 @@ class CreateRemedy extends Component {
                 ) : (
                   <tr>
                     <td colSpan="9" style={{ textAlign: "center" }}>
-                      {language === LANGUAGES.VI ? "Không có đơn thuốc" : ""}
+                      {language === LANGUAGES.VI ? "Không có đơn thuốc" : "No prescription"}
                     </td>
                   </tr>
                 )}
@@ -304,7 +316,7 @@ class CreateRemedy extends Component {
         </div>
 
         <button
-          onClick={() => this.handleCreateRemedy()} type="button" class="btn btn-primary"
+          onClick={() => this.createRemedy()} type="button" class="btn btn-primary"
         >
           Tạo đơn thuốc
         </button>

@@ -6,9 +6,10 @@ import DatePicker from "../../../components/Input/DatePicker";
 import {
   cancelBooking,
   getAllPatientForDoctor,
-  postSendRemedy,
   postCreateRemedy,
 } from "../../../services/bookingService";
+import { postSendRemedy } from "../../../services/remedyService";
+import { getDoctorInforById } from "../../../services/doctorService";
 import moment from "moment";
 import { LANGUAGES } from "../../../utils";
 import RemedyModal from "./RemedyModal";
@@ -74,13 +75,14 @@ class ManagePatient extends Component {
   };
   handleBtnConfirm = (item) => {
     let data = {
-      doctorId: item.doctorId,
-      patientId: item.patientId,
       email: item.patient.email,
-      timeType: item.timeType,
+      phoneNumber: item.patientPhoneNumber,
+      patientId: item.patient.id,
+      doctorId: item.doctor.id,
+      bookingId: item.id,
+      timeType: item.timeType.keyMap,
+      date: item.date,
       patientName: item.patient.firstName,
-      imageRemedy: item.imageRemedy,
-      token: item.token,
     };
     this.setState({
       isOpenRemedyModal: true,
@@ -134,120 +136,55 @@ class ManagePatient extends Component {
     });
   };
 
-  // sendRemedy = async (dataChild) => {
-  //   let { dataModal } = this.state;
-  //   this.setState({ isShowLoading: true });
+  sendRemedyImage = async (dataChild) => {
+    let { dataModal } = this.state;
+    this.setState({ isShowLoading: true });
+    let res = await postSendRemedy({
+      email: dataModal.email,
+      phoneNumber: dataModal.phoneNumber,
+      image: dataChild.imgBase64,
+      doctor: {
+        id: dataModal.doctorId
+      },
+      patient: {
+        id: dataModal.patientId
+      },
+      booking: {
+        id: dataModal.bookingId
+      },
+      description: dataChild.description,
+      timeType: dataModal.timeType,
+      date: dataModal.date,
+    });
+    if (res && res.code === 200) {
+      this.setState({ isShowLoading: false });
 
-  //   let totalCostData = null;
-  //   let specialtyIdData = null;
-  //   if (
-  //     this.props.user &&
-  //     this.props.user.Doctor_Infor &&
-  //     this.props.user.Doctor_Infor.priceTypeData &&
-  //     this.props.user.Doctor_Infor.priceTypeData.valueEn
-  //   ) {
-  //     totalCostData = this.props.user.Doctor_Infor.priceTypeData.valueEn;
-  //   }
-  //   if (
-  //     this.props.user &&
-  //     this.props.user.Doctor_Infor &&
-  //     this.props.user.Doctor_Infor.specialtyId
-  //   ) {
-  //     specialtyIdData = this.props.user.Doctor_Infor.specialtyId;
-  //   }
-
-  //   let res = await postSendRemedy({
-  //     email: dataChild.email,
-  //     imgBase64: dataChild.imgBase64,
-  //     doctorId: dataModal.doctorId,
-  //     patientId: dataModal.patientId,
-  //     timeType: dataModal.timeType,
-  //     language: this.props.language,
-  //     patientName: dataModal.patientName,
-  //     totalCost: totalCostData,
-  //     specialtyId: specialtyIdData,
-  //   });
-  //   if (res && res.errCode === 0) {
-  //     this.setState({ isShowLoading: false });
-
-  //     if (this.props.language == "en") {
-  //       toast.success("Send Remedy succeed!");
-  //     } else {
-  //       toast.success("Gửi đơn thuốc thành công!");
-  //     }
-  //     this.closeRemedyModal();
-  //     await this.getDataPatient();
-  //   } else {
-  //     this.setState({ isShowLoading: true });
-  //     if (this.props.language == "en") {
-  //       toast.error("Something wrongs...!");
-  //     } else {
-  //       toast.error("Lỗi!");
-  //     }
-  //   }
-  //   this.setState({ isShowLoading: false });
-  // };
-
-  // createRemedyImage = async (dataChild) => {
-  //   let { dataModalCreateRemedy } = this.state;
-  //   this.setState({ isShowLoading: true });
-
-  //   let res = await postCreateRemedy({
-  //     email: dataChild.email,
-  //     listMedicine: dataChild.listMedicine,
-  //     desciption: dataChild.desciption,
-  //     doctorId: dataModalCreateRemedy.doctorId,
-  //     patientId: dataModalCreateRemedy.patientId,
-  //     timeType: dataModalCreateRemedy.timeType,
-  //     date: dataModalCreateRemedy.date,
-  //     token: dataModalCreateRemedy.token,
-  //     language: this.props.language,
-  //     patientName: dataModalCreateRemedy.patientName,
-  //     doctorName: dataModalCreateRemedy.doctorName,
-  //   });
-  //   if (res && res.errCode === 0) {
-  //     this.setState({ isShowLoading: false });
-  //     if (this.props.language == "en") {
-  //       toast.success("Create Remedy succeed!");
-  //     } else {
-  //       toast.success("Tạo đơn thuốc thành công!");
-  //     }
-  //     this.closeCreateImageRemedyModal();
-  //     await this.getDataPatient();
-  //   } else {
-  //     this.setState({ isShowLoading: true });
-  //     if (this.props.language == "en") {
-  //       toast.error("Something wrongs...!");
-  //     } else {
-  //       toast.error("Lỗi!");
-  //     }
-
-  //   }
-  //   this.setState({ isShowLoading: false });
-  // };
+      if (this.props.language == "en") {
+        toast.success("Send Remedy succeed!");
+      } else {
+        toast.success("Gửi đơn thuốc thành công!");
+      }
+      this.closeRemedyModal();
+      await this.getDataPatient();
+    } else {
+      this.setState({ isShowLoading: true });
+      if (this.props.language == "en") {
+        toast.error("Something wrongs...!");
+      } else {
+        toast.error("Lỗi!");
+      }
+    }
+    this.setState({ isShowLoading: false });
+  };
 
   openPreviewImage = (item) => {
-    this.setState({
-      previewImgURL: ""
-    })
-
-    let imageBase64 = "";
-
     if (item.imageRemedy) {
-      imageBase64 = new Buffer(item.imageRemedy, "base64").toString("binary");
-      if (imageBase64) {
-        console.log("imageBase64 co")
-        this.setState({
-          previewImgURL: imageBase64
-        })
-
-        if (this.state.previewImgURL) {
-          this.setState({
-            isOpen: true,
-          });
-        }
-      }
-    } else {
+      this.setState({
+        previewImgURL: item.imageRemedy,
+        isOpen: true,
+      })
+    }
+    else {
       console.log("this.props.language", this.props.language)
       if (this.props.language == "vi") {
         toast.info("Bác sĩ chưa tạo đơn thuốc cho bệnh nhân này!");
@@ -255,14 +192,6 @@ class ManagePatient extends Component {
         toast.info("The doctor has not created a prescription for this patient!");
       }
     }
-
-    if (this.state.previewImgURL) console.log("this.state.previewImgURL", this.state.previewImgURL)
-    console.log("imageBase64", imageBase64)
-
-
-
-
-    console.log("isOpen", this.state.isOpen)
   };
 
   render() {
@@ -287,15 +216,8 @@ class ManagePatient extends Component {
             isOpenModal={isOpenRemedyModal}
             dataModal={dataModal}
             closeRemedyModal={this.closeRemedyModal}
-            sendRemedy={this.sendRemedy}
+            sendRemedy={this.sendRemedyImage}
           />
-          {/* <CreateImageRemedyModal
-            isOpenCreateImageRemedyModal={isOpenCreateImageRemedyModal}
-            dataModalCreateRemedy={dataModalCreateRemedy}
-            closeCreateImageRemedyModal={this.closeCreateImageRemedyModal}
-            createRemedyImage={this.createRemedyImage}
-          /> */}
-
           <div className="manage-patient-container">
             <div className="m-p-title font-weight-bold"><FormattedMessage id={"manage-patient.title"} /> </div>
             <div className="manage-patient-body row">
@@ -312,14 +234,16 @@ class ManagePatient extends Component {
                   <tbody>
                     <tr>
                       <th>#</th>
-                      <th><FormattedMessage id={"manage-patient.examination-time"} /></th>
-                      <th><FormattedMessage id={"manage-patient.patient-name"} /></th>
-                      <th><FormattedMessage id={"manage-patient.address"} /></th>
-                      <th><FormattedMessage id={"manage-patient.phone-number"} /></th>
-                      <th><FormattedMessage id={"manage-patient.gender"} /></th>
-                      <th><FormattedMessage id={"manage-patient.reason"} /></th>
-                      <th><FormattedMessage id={"manage-patient.prescription"} /></th>
-                      <th><FormattedMessage id={"manage-patient.actions"} /></th>
+                      <th style={{ textAlign: "center" }}><FormattedMessage id={"manage-patient.examination-time"} /></th>
+                      <th style={{ textAlign: "center" }}><FormattedMessage id={"manage-patient.patient-name"} /></th>
+                      <th style={{ textAlign: "center" }}><FormattedMessage id={"manage-patient.address"} /></th>
+                      <th style={{ textAlign: "center" }}><FormattedMessage id={"manage-patient.phone-number"} /></th>
+                      <th style={{ textAlign: "center" }}><FormattedMessage id={"manage-patient.gender"} /></th>
+                      <th style={{ textAlign: "center" }}><FormattedMessage id={"manage-patient.reason"} /></th>
+                      <th style={{ textAlign: "center" }}><FormattedMessage id={"manage-patient.prescription"} /></th>
+                      <th style={{ textAlign: "center" }}>Gửi hình ảnh đơn thuốc</th>
+                      <th style={{ textAlign: "center" }}>Tạo đơn thuốc</th>
+                      <th style={{ textAlign: "center" }}>Xác nhận</th>
                     </tr>
                     {dataPatient && dataPatient.length > 0 ? (
                       dataPatient.map((item, index) => {
@@ -351,38 +275,71 @@ class ManagePatient extends Component {
                                 onClick={() => this.openPreviewImage(item)}
                               ><FormattedMessage id={"manage-patient.view"} /></div>
                             </td>
-                            <td>
-                              <button
-                                className="btn btn-primary"
-                                onClick={() => this.handleBtnConfirm(item)}
-                              >
-                                <FormattedMessage id={"manage-patient.send-prescriptions"} />
-                              </button>
+                            <td style={{ textAlign: "center" }}>
+                              {item.imageRemedy ?
+                                <>
+                                  <button
+                                    className="btn mx-3"
+                                    style={{ backgroundColor: '#ded735' }}
+                                    onClick={() => this.handleBtnConfirm(item)}
+                                  >
+                                    Gửi lại
+                                  </button>
+                                </>
+                                :
+                                <button
+                                  className="btn btn-primary mx-3"
+                                  onClick={() => this.handleBtnConfirm(item)}
+                                >
+                                  <FormattedMessage id={"manage-patient.send-prescriptions"} />
+                                </button>
 
-                              {item.statusId === 'S2' ?
+                              }
+
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {item.isRemedy === true ?
+                                <button
+                                  className="btn btn-warning"
+                                //onClick={() => this.handleBtnCreateRemedy(item)}
+                                >
+                                  Xem chi tiết
+                                </button>
+                                :
                                 < button
-                                  className="btn btn-info mx-5"
+                                  className="btn btn-info"
                                   onClick={() => this.handleBtnCreateRemedy(item)}
                                 >
                                   <FormattedMessage id={"manage-patient.create-prescriptions"} />
                                 </button>
-                                :
-                                <button
-                                  className="btn btn-warning mx-5"
-                                //onClick={() => this.handleBtnCreateRemedy(item)}
-                                >
-                                  Xem đơn thuốc
-                                </button>
+
                               }
-
-
-
-                              <button
-                                className="btn btn-danger"
-                                onClick={() => this.handleBtnCancel(item)}
-                              >
-                                <FormattedMessage id={"manage-patient.cancel"} />
-                              </button>
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              {item.statusId === 'S2' ?
+                                <>
+                                  <button
+                                    className="btn btn-warning mx-3"
+                                    disabled="true"
+                                  >
+                                    chưa khám
+                                  </button>
+                                  <button
+                                    className="btn btn-danger"
+                                    onClick={() => this.handleBtnCancel(item)}
+                                  >
+                                    <FormattedMessage id={"manage-patient.cancel"} />
+                                  </button>
+                                </> :
+                                <>
+                                  <button
+                                    className="btn btn-success"
+                                    disabled="true"
+                                  >
+                                    Đã khám
+                                  </button>
+                                </>
+                              }
                             </td>
                           </tr>
                         );
