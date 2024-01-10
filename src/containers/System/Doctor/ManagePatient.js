@@ -96,6 +96,12 @@ class ManagePatient extends Component {
     }
   };
 
+  handleBtnEditRemedy = (item) => {
+    if (this.props.history) {
+      this.props.history.push(`/doctor/edit-remedy/${item.id}`);
+    }
+  }
+
   // handleBtnCancel = async (item) => {
   //   this.setState({ isShowLoading: true });
   //   let res = await cancelBooking({
@@ -293,15 +299,13 @@ class ManagePatient extends Component {
                                 >
                                   <FormattedMessage id={"manage-patient.send-prescriptions"} />
                                 </button>
-
                               }
-
                             </td>
                             <td style={{ textAlign: "center" }}>
                               {item.isRemedy === true ?
                                 <button
                                   className="btn btn-warning"
-                                //onClick={() => this.handleBtnCreateRemedy(item)}
+                                  onClick={() => this.handleBtnEditRemedy(item)}
                                 >
                                   Xem chi tiết
                                 </button>

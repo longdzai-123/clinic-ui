@@ -4,7 +4,7 @@ import { FormattedMessage } from "react-intl";
 import "./CreateRemedy.scss";
 import * as actions from "../../../store/actions";
 import Select from "react-select";
-import { postSendRemedy, getRemedyByBookingId } from "../../../services/remedyService";
+import { updateRemedyService, getRemedyByBookingId } from "../../../services/remedyService";
 
 import { toast } from "react-toastify";
 import moment from "moment";
@@ -22,6 +22,7 @@ class EditRemedy extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: "",
             email: "",
             desciption: "",
             patientName: "",
@@ -44,7 +45,7 @@ class EditRemedy extends Component {
 
     async componentDidMount() {
         this.props.getListDrugs();
-        await this.getDataPatient();
+        await this.getDataRemedy();
     }
 
     getDataRemedy = async () => {
@@ -54,14 +55,17 @@ class EditRemedy extends Component {
             if (remedyInfo && remedyInfo.data) {
                 console.log("remedyInfo", remedyInfo)
                 this.setState({
+                    id: remedyInfo.data.id,
                     date: remedyInfo.data.date,
                     email: remedyInfo.data.patient.email,
-                    patientName: remedyInfo.data.patientName,
+                    patientName: remedyInfo.data.patient.firstName,
                     phoneNumber: remedyInfo.data.patientPhoneNumber,
                     isShowLoading: false,
                     doctorId: remedyInfo.data.doctor.id,
                     patientId: remedyInfo.data.patient.id,
                     bookingId: remedyInfo.data.id,
+                    listRemedyDetails: remedyInfo.data.remedyDetails,
+                    desciption: remedyInfo.data.description
                 });
             }
         }
@@ -72,7 +76,7 @@ class EditRemedy extends Component {
         if (inputData && inputData.length > 0) {
             inputData.map((item, index) => {
                 let object = {};
-                object.label = item.name;
+                object.label = `${item.name} - đơn vị:${item.unit.valueVi}`;
                 object.value = item.id;
                 result.push(object);
             });
@@ -118,11 +122,19 @@ class EditRemedy extends Component {
         });
     };
 
+    handleBtnDeleteDrug = (item) => {
+        let listRemedyDetails = [...this.state.listRemedyDetails];
+        listRemedyDetails = listRemedyDetails.filter((element) => element !== item);
+        this.setState({
+            listRemedyDetails: listRemedyDetails,
+        });
+    }
+
     handleCreateRemedyDetails = () => {
         let remedyDetails = {
             drug: {
                 id: this.state.selectedDrug.value,
-                name: this.state.selectedDrug.label
+                name: this.state.selectedDrug.label,
             },
             amount: this.state.amount,
             description: this.state.description_usage
@@ -136,35 +148,23 @@ class EditRemedy extends Component {
         console.log(this.state.listRemedyDetails)
     }
 
-    createRemedy = async (dataChild) => {
-        let dataCreateRemedy = this.state;
+    updateRemedy = async () => {
+        let dataRemedy = this.state;
         this.setState({ isShowLoading: true });
 
-        let res = await postSendRemedy({
-            email: dataCreateRemedy.email,
-            phoneNumber: dataCreateRemedy.phoneNumber,
-            doctor: {
-                id: dataCreateRemedy.doctorId
-            },
-            patient: {
-                id: dataCreateRemedy.patientId
-            },
-            booking: {
-                id: dataCreateRemedy.bookingId
-            },
-            timeType: dataCreateRemedy.timeType.keyMap,
-            date: dataCreateRemedy.date,
-            description: dataCreateRemedy.description,
-            remedyDetails: dataCreateRemedy.listRemedyDetails
+        let res = await updateRemedyService({
+            id: dataRemedy.id,
+            description: dataRemedy.description,
+            remedyDetails: dataRemedy.listRemedyDetails
         });
         if (res && res.code === 200) {
             this.setState({ isShowLoading: false });
             if (this.props.language == "en") {
-                toast.success("Create Remedy succeed!");
+                toast.success("Edit Remedy succeed!");
             } else {
-                toast.success("Tạo đơn thuốc thành công!");
+                toast.success("Sửa đơn thuốc thành công!");
             }
-            setTimeout(function () { window.location.href = '/manage-patient' }, 1000);
+            setTimeout(function () { window.location.href = '/doctor/manage-patient' }, 1000);
         } else {
             this.setState({ isShowLoading: true });
             if (this.props.language == "en") {
@@ -269,11 +269,10 @@ class EditRemedy extends Component {
                             <tbody>
                                 <tr>
                                     <th>#</th>
-                                    <th>tên thuốc</th>
-                                    <th>số lượng</th>
-                                    <th>hướng dẫn</th>
-                                    <th>hành động</th>
-
+                                    <th>Tên thuốc</th>
+                                    <th>Đơn vị</th>
+                                    <th>Hướng dẫn sử dụng</th>
+                                    <th>Hành động</th>
                                 </tr>
                                 {listRemedyDetails && listRemedyDetails.length > 0 ? (
                                     listRemedyDetails.map((item, index) => {
@@ -286,7 +285,7 @@ class EditRemedy extends Component {
                                                 <td>
                                                     <button
                                                         className="btn btn-danger"
-                                                        onClick={() => this.handleBtnCancel(item)}
+                                                        onClick={() => this.handleBtnDeleteDrug(item)}
                                                     >
                                                         Xóa
                                                     </button>
@@ -307,12 +306,10 @@ class EditRemedy extends Component {
                 </div>
 
                 <button
-                    onClick={() => this.createRemedy()} type="button" class="btn btn-primary"
+                    onClick={() => this.updateRemedy()} type="button" class="btn btn-primary"
                 >
-                    Tạo đơn thuốc
+                    Sửa đơn thuốc
                 </button>
-
-
             </LoadingOverlay >
         );
     }

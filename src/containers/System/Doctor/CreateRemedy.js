@@ -22,6 +22,7 @@ class CreateRemedy extends Component {
   constructor(props) {
     super(props);
     this.state = {
+     
       email: "",
       desciption: "",
       patientName: "",
@@ -55,6 +56,7 @@ class CreateRemedy extends Component {
       if (patientInfo && patientInfo.data) {
         console.log("patientInfo", patientInfo)
         this.setState({
+          
           date: patientInfo.data.date,
           email: patientInfo.data.patient.email,
           patientName: patientInfo.data.patientName,
@@ -74,7 +76,7 @@ class CreateRemedy extends Component {
     if (inputData && inputData.length > 0) {
       inputData.map((item, index) => {
         let object = {};
-        object.label = item.name;
+        object.label = `${item.name} - đơn vị:${item.unit.valueVi}`;
         object.value = item.id;
         result.push(object);
       });
@@ -145,7 +147,7 @@ class CreateRemedy extends Component {
       listRemedyDetails: listRemedyDetails,
     });
   }
-  createRemedy = async (dataChild) => {
+  createRemedy = async () => {
     let dataCreateRemedy = this.state;
     this.setState({ isShowLoading: true });
 
@@ -278,10 +280,10 @@ class CreateRemedy extends Component {
               <tbody>
                 <tr>
                   <th style={{ textAlign: "center" }}>#</th>
-                  <th style={{ textAlign: "center" }}>tên thuốc</th>
-                  <th style={{ textAlign: "center" }}>số lượng</th>
-                  <th style={{ textAlign: "center" }}>hướng dẫn</th>
-                  <th style={{ textAlign: "center" }}>hành động</th>
+                  <th style={{ textAlign: "center" }}>Tên thuốc</th>
+                  <th style={{ textAlign: "center" }}>Số lượng</th>
+                  <th style={{ textAlign: "center" }}>Hướng dẫn sử dụng</th>
+                  <th style={{ textAlign: "center" }}>Hành động</th>
 
                 </tr>
                 {listRemedyDetails && listRemedyDetails.length > 0 ? (
@@ -318,7 +320,7 @@ class CreateRemedy extends Component {
         <button
           onClick={() => this.createRemedy()} type="button" class="btn btn-primary"
         >
-          Tạo đơn thuốc
+          Tạo đơn thuốc và gửi
         </button>
 
 
