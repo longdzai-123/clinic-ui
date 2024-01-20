@@ -23,6 +23,14 @@ class ManageSchedule extends Component {
   }
 
   componentDidMount() {
+    if (this.props.userInfor.roleId === 'R2') {
+      this.setState({
+        selectedDoctor: {
+          label: `${this.props.userInfor.lastName} ${this.props.userInfor.firstName}`,
+          value: this.props.userInfor.id
+        },
+      })
+    }
     this.props.fetchAllDoctors();
     this.props.fetchAllScheduleTime();
   }
@@ -152,7 +160,9 @@ class ManageSchedule extends Component {
       if (selectedTime && selectedTime.length > 0) {
         selectedTime.map((schedule) => {
           let object = {};
-          object.doctorId = selectedDoctor.value;
+          object.doctor = {
+            id: selectedDoctor.value
+          }
           object.date = formatedDate;
           object.timeType = schedule.keyMap;
           result.push(object);
@@ -252,6 +262,7 @@ class ManageSchedule extends Component {
 const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.user.isLoggedIn,
+    userInfor: state.user.userInfor,
     language: state.app.language,
     allDoctors: state.admin.allDoctors,
     allScheduleTime: state.admin.allScheduleTime,

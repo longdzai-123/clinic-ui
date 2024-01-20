@@ -2,6 +2,7 @@ export const path = {
     HOME: '/',
     HOMEPAGE: '/home',
     LOGIN: '/login',
+    SIGNUP: "/sign-up",
     LOG_OUT: '/logout',
     SYSTEM: '/system',
     DETAIL_DOCTOR: "/detail-doctor/:id",
@@ -11,7 +12,6 @@ export const path = {
     LIST_SPECIALTY: "/list-specialty",
     LIST_OUSTANDING_DOCTOR: "/list-oustanding-doctor",
     LIST_MEDICAL_FACILITY: "/list-medical-facility",
-    ADMIN_DASHBOARD: "/admin-dashboard",
     PROFILE_SETTING: "/user",
 };
 

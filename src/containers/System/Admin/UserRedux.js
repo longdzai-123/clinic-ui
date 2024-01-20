@@ -7,6 +7,7 @@ import "./UserRedux.scss";
 import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css"; // This only needs to be imported once in your app
 import TableManageUser from "./TableManageUser";
+import { toast } from "react-toastify";
 
 class UserRedux extends Component {
 
@@ -29,6 +30,7 @@ class UserRedux extends Component {
             position: "",
             role: "",
             avatar: "",
+            isActive: "",
 
 
             userEditId: "",
@@ -195,6 +197,31 @@ class UserRedux extends Component {
             action: CRUD_ACTIONS.EDIT,
             userEditId: user.id,
         });
+        if (user.phoneNumber === null) {
+            this.setState({
+                phoneNumber: "",
+            })
+        }
+        if (user.address === null) {
+            this.setState({
+                address: "",
+            })
+        }
+        if (user.gender === null) {
+            this.setState({
+                gender: "",
+            })
+        }
+        if (user.positionId === null) {
+            this.setState({
+                position: "",
+            })
+        }
+        if (user.roleId === null) {
+            this.setState({
+                role: "",
+            })
+        }
     }
 
     render() {
@@ -276,6 +303,11 @@ class UserRedux extends Component {
                                     value={gender}
                                     onChange={(e) => { this.onChangeInput(e, "gender") }}
                                 >
+                                    <option value="">
+                                        {language === LANGUAGES.VI
+                                            ? "Chọn giới tính"
+                                            : "Choose gender"}
+                                    </option>
                                     {genders && genders.length > 0 && genders.map((item, index) => {
                                         return (
                                             <option key={index} value={item.keyMap}>
@@ -292,6 +324,11 @@ class UserRedux extends Component {
                                     value={position}
                                     onChange={(e) => { this.onChangeInput(e, "position") }}
                                 >
+                                    <option value="">
+                                        {language === LANGUAGES.VI
+                                            ? "Chọn chức danh"
+                                            : "Choose positon"}
+                                    </option>
                                     {positions && positions.length > 0 && positions.map((item, index) => {
                                         return (
                                             <option key={index} value={item.keyMap}>
@@ -308,6 +345,11 @@ class UserRedux extends Component {
                                     value={role}
                                     onChange={(e) => { this.onChangeInput(e, "role") }}
                                 >
+                                    <option value="">
+                                        {language === LANGUAGES.VI
+                                            ? "Chọn vai trò"
+                                            : "Choose role"}
+                                    </option>
                                     {roles && roles.length > 0 && roles.map((item, index) => {
                                         return (
                                             <option key={index} value={item.keyMap}>

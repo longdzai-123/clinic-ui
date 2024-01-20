@@ -103,4 +103,36 @@ export const getClinicById = (id) => {
     });
 }
 
+export const searchByNameAndAddress = (data) => {
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: `/clinic/search?nameClinic=${data.name}&nameAddress=${data.address}`,
+  };
+  return httpRequest.request(config)
+    .then((response) => {
+      console.log(response.data)
+      return response.data
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+export const deleteClinic = (id) => {
+  let config = {
+    method: 'delete',
+    maxBodyLength: Infinity,
+    url: `/clinic/${id}`,
+  };
+  return httpRequest.request(config)
+    .then((response) => {
+      console.log(response.data)
+      return response.data
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
 

@@ -42,6 +42,23 @@ export const getAllUser = () => {
         });
 }
 
+export const getAllDoctorAndAdmin = () => {
+    let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: '/user/all-doctor-admin',
+        headers: {}
+    };
+
+    return httpRequest.request(config)
+        .then((response) => {
+            return response.data
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
 export const createNewUserService = (dataUser) => {
     console.log(dataUser)
     let data = JSON.stringify({
@@ -327,6 +344,53 @@ export const getExtraInforDoctorById = (doctorId) => {
             console.log(error);
         });
 }
+
+export const signUp = (dataUser) => {
+    console.log(dataUser)
+    let data = JSON.stringify({
+        "email": dataUser.email,
+        "password": dataUser.password,
+        "firstName": dataUser.firstName,
+        "lastName": dataUser.lastName,
+        "address": dataUser.address,
+    });
+
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: '/user/sign-up',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        data: data
+    };
+    return httpRequest.request(config)
+        .then((response) => {
+            return response.data
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
+export const activeAccount = (doctorId) => {
+    let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `/user/active-account?doctorId=${doctorId}`,
+        headers: {}
+    };
+
+    return httpRequest.request(config)
+        .then((response) => {
+            return response.data
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
+
 
 
 

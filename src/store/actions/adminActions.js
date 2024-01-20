@@ -1,9 +1,11 @@
 import actionTypes from './actionTypes';
-import { getAllcode, createNewUserService, getAllUser, deleteUserService, editUserService, getTopDoctorHomeService, getAllDoctor, saveDetailDoctor, saveDoctorInformation } from '../../services/userService';
+import { getAllDoctorAndAdmin, getAllcode, createNewUserService, getAllUser, deleteUserService, editUserService, getTopDoctorHomeService, getAllDoctor, saveDetailDoctor, saveDoctorInformation } from '../../services/userService';
 import { getAllSpecialty } from "./../../services/specialtyService"
 import { getAllClinic } from "./../../services/clinicService"
 import { toast } from "react-toastify";
 import { filterDrugs } from "./../../services/drugService"
+import { getAllUnit } from '../../services/unitService';
+
 
 export const fetchGenderStart = () => {
     return async (dispatch, getState) => {
@@ -118,7 +120,7 @@ export const createUserFailed = () => ({
 export const fetchAllUsersStart = () => {
     return async (dispatch, getState) => {
         try {
-            let response = await getAllUser();
+            let response = await getAllDoctorAndAdmin();
             if (response && response.code === 200) {
                 dispatch(fetchAllUsersSuccess(response.data.reverse()));
             } else {
@@ -301,6 +303,30 @@ export const fetchAllDrugs = () => {
             console.log("FETCH_ALL_DOCTORS_FAILED", e);
             dispatch({
                 type: actionTypes.FETCH_ALL_DRUGS_FAILED,
+            });
+        }
+    };
+};
+
+export const fetchAllUnits = () => {
+    return async (dispatch, getState) => {
+        try {
+            let response = await getAllUnit();
+            console.log(response)
+            if (response && response.code === 200) {
+                dispatch({
+                    type: actionTypes.FETCH_ALL_UNITS_SUCCESS,
+                    dataUnits: response.data,
+                });
+            } else {
+                dispatch({
+                    type: actionTypes.FETCH_ALL_UNITS_FAILED,
+                });
+            }
+        } catch (e) {
+            console.log("FETCH_ALL_UNITS_FAILED", e);
+            dispatch({
+                type: actionTypes.FETCH_ALL_UNITS_FAILED,
             });
         }
     };

@@ -10,7 +10,8 @@ const initialState = {
     allDoctors: [],
     allScheduleTime: [],
     allRequiredDoctorInfor: [],
-    allDrugs: []
+    allDrugs: [],
+    allUnits: []
 
 }
 
@@ -133,6 +134,16 @@ const adminReducer = (state = initialState, action) => {
             };
         case actionTypes.FETCH_ALL_DRUGS_FAILED:
             state.allDrugs = [];
+            return {
+                ...state,
+            };
+        case actionTypes.FETCH_ALL_UNITS_SUCCESS:
+            state.allUnits = action.dataUnits;
+            return {
+                ...state,
+            };
+        case actionTypes.FETCH_ALL_UNITS_FAILED:
+            state.allUnits = [];
             return {
                 ...state,
             };

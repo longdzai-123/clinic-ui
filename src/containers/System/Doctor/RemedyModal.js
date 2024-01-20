@@ -16,6 +16,8 @@ class RemedyModal extends Component {
       email: "",
       imgBase64: "",
       description: "",
+      note: "",
+
     };
   }
 
@@ -82,10 +84,18 @@ class RemedyModal extends Component {
   handleSendRemedy = () => {
     this.props.sendRemedy(this.state);
   };
+  handleUpdateRemedy = () => {
+    this.props.updateRemedy(this.state);
+  };
 
   handleOnChangeDescription = (event) => {
     this.setState({
       description: event.target.value
+    });
+  };
+  handleOnChangeNote = (event) => {
+    this.setState({
+      note: event.target.value
     });
   };
   render() {
@@ -140,11 +150,27 @@ class RemedyModal extends Component {
             >
             </textarea>
           </div>
+          <div class="col-12 form-group my-5">
+            <label>Ghi chú</label>
+            <textarea
+              className="form-control"
+              aria-label="With textarea"
+              value={this.state.note}
+              onChange={(event) => this.handleOnChangeNote(event)}
+            >
+            </textarea>
+          </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => this.handleSendRemedy()}>
-            <FormattedMessage id={"manage-patient.send"} />
-          </Button>{" "}
+          {dataModal.image ?
+            <Button color="primary" onClick={() => this.handleUpdateRemedy()}>
+              Gửi lại
+            </Button>
+            :
+            <Button color="primary" onClick={() => this.handleSendRemedy()}>
+              <FormattedMessage id={"manage-patient.send"} />
+            </Button>
+          }
           <Button color="secondary" onClick={closeRemedyModal}>
             <FormattedMessage id={"manage-patient.cancel"} />
           </Button>

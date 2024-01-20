@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
-import { getAllUser, createNewUserService, deleteUserService } from '../../services/userService';
+import { getAllDoctorAndAdmin, createNewUserService, deleteUserService } from '../../services/userService';
 import './UserManage.scss'
 import ModalUser from './ModalUser';
 import ModalEditUser from './ModalEditUser';
-import { emitter } from '../../utils/emitter'
+import { emitter } from '../../utils/emitter';
+import { toast } from "react-toastify";
 class UserManage extends Component {
 
     constructor(props) {
@@ -25,7 +26,7 @@ class UserManage extends Component {
     }
 
     getAllUsersFromReact = async () => {
-        let response = await getAllUser();
+        let response = await getAllDoctorAndAdmin();
         if (response.code === 200) {
             this.setState({
                 arrUsers: response.data
@@ -57,6 +58,11 @@ class UserManage extends Component {
         try {
             let response = await createNewUserService(data)
             if (response.code === 200) {
+                if (this.props.language == "en") {
+                    toast.success("Invalid date!");
+                } else {
+                    toast.success("Thêm tài khoản thành công!");
+                }
                 await this.getAllUsersFromReact()
                 this.setState({
                     isOpenModalUser: false
@@ -157,6 +163,7 @@ class UserManage extends Component {
 
 const mapStateToProps = state => {
     return {
+        language: state.app.language,
     };
 };
 

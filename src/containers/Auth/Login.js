@@ -38,7 +38,20 @@ class Login extends Component {
             console.log(data)
             if (data.code === 200) {
                 this.props.userLoginSuccess(data.data)
-            } else {
+            }
+            if (data.code === 403001) {
+                if (this.props.language === "vi") {
+                    this.setState({
+                        errMessage: "Tài khoản chưa được active!",
+                    });
+                } else {
+                    this.setState({
+                        errMessage: "Account has not been activated yet!",
+                    });
+                }
+            }
+
+            else {
                 if (this.props.language === "vi") {
                     this.setState({
                         errMessage: "Những thông tin đăng nhập này không khớp với hồ sơ của chúng tôi.",
@@ -64,6 +77,14 @@ class Login extends Component {
             this.handleLogin();
         }
     };
+
+    handleSignUp = () => {
+        if (this.props.history) {
+            this.props.history.push(`/sign-up`);
+        }
+    }
+
+
 
     render() {
         let { errMessage } = this.state
@@ -102,6 +123,24 @@ class Login extends Component {
                         </div>
                         <div className='col-12'>
                             <button className='btn-login' onClick={() => { this.handleLogin() }}>Login</button>
+                        </div>
+                        <div className="col-12 section-forgot-signup">
+                            <span className="forgot-password pointer"
+                            // onClick={() => {
+                            //     history.push("/forgot-password");
+                            // }}
+                            >
+                                <FormattedMessage id={"login.forgot-password"} />
+                            </span>
+                            <span
+                                className="sign-up"
+                                // onClick={() => {
+                                //     history.push("/sign-up");
+                                // }}
+                                onClick={() => { this.handleSignUp() }}
+                            >
+                                <FormattedMessage id={"login.sign-up"} />
+                            </span>
                         </div>
 
                         <div className='col-12'>

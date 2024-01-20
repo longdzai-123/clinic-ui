@@ -16,13 +16,13 @@ import {
 import { getBookingById, postCreateRemedy } from "../../../services/bookingService";
 import LoadingOverlay from "react-loading-overlay";
 import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
-import { create } from "lodash";
+import _ from "lodash";
 
 class CreateRemedy extends Component {
   constructor(props) {
     super(props);
     this.state = {
-     
+
       email: "",
       desciption: "",
       patientName: "",
@@ -56,7 +56,6 @@ class CreateRemedy extends Component {
       if (patientInfo && patientInfo.data) {
         console.log("patientInfo", patientInfo)
         this.setState({
-          
           date: patientInfo.data.date,
           email: patientInfo.data.patient.email,
           patientName: patientInfo.data.patientName,
@@ -122,7 +121,18 @@ class CreateRemedy extends Component {
     });
   };
 
+
+
   handleCreateRemedyDetails = () => {
+    let { selectedDrug } = this.state;
+    if (selectedDrug && _.isEmpty(selectedDrug)) {
+      if (this.props.language == "en") {
+        toast.error("Invalid selected doctor!");
+      } else {
+        toast.error("Chưa chọn đơn vị!");
+      }
+      return;
+    }
     let remedyDetails = {
       drug: {
         id: this.state.selectedDrug.value,
@@ -147,44 +157,55 @@ class CreateRemedy extends Component {
       listRemedyDetails: listRemedyDetails,
     });
   }
+
+
+
   createRemedy = async () => {
     let dataCreateRemedy = this.state;
     this.setState({ isShowLoading: true });
-
-    let res = await postSendRemedy({
-      email: dataCreateRemedy.email,
-      phoneNumber: dataCreateRemedy.phoneNumber,
-      doctor: {
-        id: dataCreateRemedy.doctorId
-      },
-      patient: {
-        id: dataCreateRemedy.patientId
-      },
-      booking: {
-        id: dataCreateRemedy.bookingId
-      },
-      timeType: dataCreateRemedy.timeType.keyMap,
-      date: dataCreateRemedy.date,
-      description: dataCreateRemedy.description,
-      remedyDetails: dataCreateRemedy.listRemedyDetails
-    });
-    if (res && res.code === 200) {
-      this.setState({ isShowLoading: false });
-      if (this.props.language == "en") {
-        toast.success("Create Remedy succeed!");
+    if (dataCreateRemedy.listRemedyDetails.length > 0) {
+      let res = await postSendRemedy({
+        email: dataCreateRemedy.email,
+        phoneNumber: dataCreateRemedy.phoneNumber,
+        doctor: {
+          id: dataCreateRemedy.doctorId
+        },
+        patient: {
+          id: dataCreateRemedy.patientId
+        },
+        booking: {
+          id: dataCreateRemedy.bookingId
+        },
+        timeType: dataCreateRemedy.timeType.keyMap,
+        date: dataCreateRemedy.date,
+        description: dataCreateRemedy.description,
+        remedyDetails: dataCreateRemedy.listRemedyDetails
+      });
+      if (res && res.code === 200) {
+        this.setState({ isShowLoading: false });
+        if (this.props.language == "en") {
+          toast.success("Create Remedy succeed!");
+        } else {
+          toast.success("Tạo đơn thuốc thành công!");
+        }
+        setTimeout(function () { window.location.href = '/doctor/manage-patient' }, 1000);
       } else {
-        toast.success("Tạo đơn thuốc thành công!");
+        this.setState({ isShowLoading: true });
+        if (this.props.language == "en") {
+          toast.error("Something wrongs...!");
+        } else {
+          toast.error("Lỗi!");
+        }
       }
-      setTimeout(function () { window.location.href = '/doctor/manage-patient' }, 1000);
+      this.setState({ isShowLoading: false });
     } else {
       this.setState({ isShowLoading: true });
       if (this.props.language == "en") {
-        toast.error("Something wrongs...!");
+        toast.error("Prescription is empty!");
       } else {
-        toast.error("Lỗi!");
+        toast.error("Đơn thuốc rỗng!");
       }
     }
-    this.setState({ isShowLoading: false });
   };
 
 

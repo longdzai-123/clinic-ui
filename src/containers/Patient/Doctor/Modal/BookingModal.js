@@ -148,6 +148,7 @@ class BookingModal extends Component {
   handleConfirmBooking = async () => {
     this.setState({ isShowLoading: true });
     let { language } = this.props;
+    console.log(this.props.dataTime)
 
     //   //validate input
     //   // !data.email || !data.doctorId || !data.timeType || !data.date
@@ -163,7 +164,7 @@ class BookingModal extends Component {
       date: this.props.dataTime.date,
       birthday: this.state.birthday,
       selectedGender: this.state.selectedGender.value,
-      doctorId: this.props.match.params.id,
+      doctorId: this.props.dataTime.doctor.id,
       timeType: this.state.timeType,
       //language: this.props.language,
       timeString: timeString,
@@ -211,7 +212,7 @@ class BookingModal extends Component {
     let { isOpenModal, closeBookingClose, dataTime } = this.props;
     console.log(dataTime)
 
-    let doctorId = dataTime && !_.isEmpty(dataTime) ? dataTime.doctorId : "";
+    let doctorId = dataTime && !_.isEmpty(dataTime) ? dataTime.doctor.id : "";
 
     return (
       <LoadingOverlay

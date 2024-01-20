@@ -48,6 +48,30 @@ export const updateRemedyService = (dataRemedy) => {
         });
 }
 
+export const updateRemedyImageService = (dataRemedy) => {
+    console.log(dataRemedy)
+    let data = JSON.stringify(
+        dataRemedy
+    );
+
+    let config = {
+        method: 'put',
+        maxBodyLength: Infinity,
+        url: '/remedy/image',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        data: data
+    };
+    return httpRequest.request(config)
+        .then((response) => {
+            return response.data
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+
 export const getRemedyByBookingId = (bookingId) => {
     let config = {
         method: 'get',

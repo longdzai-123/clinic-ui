@@ -11,6 +11,9 @@ import EditSpecialty from "../containers/System/Specialty/resources/EditSpecialt
 import ManageClinic from "../containers/System/Clinic/ManageClinic";
 import CreateClinic from "../containers/System/Clinic/resources/CreateClinic";
 import EditClinic from "../containers/System/Clinic/resources/EditClinic";
+import ManageDrug from '../containers/System/Drug/ManageDrug';
+import CreateDrug from '../containers/System/Drug/resources/CreateDrug';
+import EditDrug from '../containers/System/Drug/resources/EditDrug';
 class System extends Component {
     render() {
 
@@ -30,6 +33,10 @@ class System extends Component {
                             <Route path="/system/manage-clinic" component={ManageClinic} />
                             <Route path="/system/clinic-create" component={CreateClinic} />
                             <Route path="/system/clinic-edit/:id" component={EditClinic} />
+                            <Route path="/system/manage-drug" component={ManageDrug} />
+                            <Route path="/system/create-drug" component={CreateDrug} />
+                            <Route path="/system/edit-drug/:id" component={EditDrug} />
+
                             <Route component={() => { return (<Redirect to={systemMenuPath} />) }} />
                         </Switch>
                     </div>

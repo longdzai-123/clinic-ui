@@ -94,3 +94,19 @@ export const getBookingById = (id) => {
             console.log(error);
         });
 }
+
+export const deleteBookingById = (id) => {
+    let config = {
+        method: 'delete',
+        maxBodyLength: Infinity,
+        url: `/bookings/${id}`,
+    };
+    return httpRequest.request(config)
+        .then((response) => {
+            console.log(response.data)
+            return response.data
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}

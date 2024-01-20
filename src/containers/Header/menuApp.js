@@ -53,6 +53,16 @@ export const adminMenu = [
             },
         ],
     },
+    {
+        //quản lý thuốc
+        name: "menu.admin.drug",
+        menus: [
+            {
+                name: "menu.admin.manage-drug",
+                link: "/system/manage-drug",
+            },
+        ],
+    },
 ];
 
 export const doctorMenu = [
@@ -68,6 +78,11 @@ export const doctorMenu = [
                 //quản lý bệnh nhân khám bệnh bác sĩ
                 name: "menu.doctor.manage-patient",
                 link: "/doctor/manage-patient",
+            },
+            {
+                //Thống kê hóa đơn khám bệnh của bác sỹ
+                name: "menu.doctor.statistic-invoice",
+                link: "/doctor/statistic-invoice",
             },
         ],
     },

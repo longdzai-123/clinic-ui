@@ -16,7 +16,7 @@ import {
 import { getBookingById, postCreateRemedy } from "../../../services/bookingService";
 import LoadingOverlay from "react-loading-overlay";
 import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
-import { create } from "lodash";
+import _ from "lodash";
 
 class EditRemedy extends Component {
     constructor(props) {
@@ -24,7 +24,8 @@ class EditRemedy extends Component {
         this.state = {
             id: "",
             email: "",
-            desciption: "",
+            description: "",
+            note: "",
             patientName: "",
             phoneNumber: "",
             bookingId: "",
@@ -65,7 +66,8 @@ class EditRemedy extends Component {
                     patientId: remedyInfo.data.patient.id,
                     bookingId: remedyInfo.data.id,
                     listRemedyDetails: remedyInfo.data.remedyDetails,
-                    desciption: remedyInfo.data.description
+                    description: remedyInfo.data.description,
+                    note: remedyInfo.data.note
                 });
             }
         }
@@ -116,6 +118,12 @@ class EditRemedy extends Component {
         });
     };
 
+    handleOnChangeNote = (event) => {
+        this.setState({
+            note: event.target.value
+        });
+    };
+
     handleOnchangeAmountDrug = (event) => {
         this.setState({
             amount: event.target.value
@@ -131,6 +139,23 @@ class EditRemedy extends Component {
     }
 
     handleCreateRemedyDetails = () => {
+        let { selectedDrug, amount } = this.state;
+        if (amount === 0) {
+            if (this.props.language == "en") {
+                toast.error("The quantity of medicine has not been entered!");
+            } else {
+                toast.error("Chưa nhập số lượng thuốc!");
+            }
+            return;
+        }
+        if (selectedDrug && _.isEmpty(selectedDrug)) {
+            if (this.props.language == "en") {
+                toast.error("Prescription not selected yet!");
+            } else {
+                toast.error("Chưa chọn đơn thuốc!");
+            }
+            return;
+        }
         let remedyDetails = {
             drug: {
                 id: this.state.selectedDrug.value,
@@ -149,36 +174,45 @@ class EditRemedy extends Component {
     }
 
     updateRemedy = async () => {
-        let dataRemedy = this.state;
+        let { dataRemedy } = this.state;
         this.setState({ isShowLoading: true });
-
-        let res = await updateRemedyService({
-            id: dataRemedy.id,
-            description: dataRemedy.description,
-            remedyDetails: dataRemedy.listRemedyDetails
-        });
-        if (res && res.code === 200) {
+        if (dataRemedy.listRemedyDetails.length > 0) {
+            let res = await updateRemedyService({
+                id: dataRemedy.id,
+                description: dataRemedy.description,
+                remedyDetails: dataRemedy.listRemedyDetails,
+                note: dataRemedy.note
+            });
+            if (res && res.code === 200) {
+                this.setState({ isShowLoading: false });
+                if (this.props.language == "en") {
+                    toast.success("Edit Remedy succeed!");
+                } else {
+                    toast.success("Sửa đơn thuốc thành công!");
+                }
+                setTimeout(function () { window.location.href = '/doctor/manage-patient' }, 1000);
+            } else {
+                this.setState({ isShowLoading: true });
+                if (this.props.language == "en") {
+                    toast.error("Something wrongs...!");
+                } else {
+                    toast.error("Lỗi!");
+                }
+            }
+            this.setState({ isShowLoading: false });
+        } else {
             this.setState({ isShowLoading: false });
             if (this.props.language == "en") {
-                toast.success("Edit Remedy succeed!");
+                toast.error("Prescription is empty!");
             } else {
-                toast.success("Sửa đơn thuốc thành công!");
-            }
-            setTimeout(function () { window.location.href = '/doctor/manage-patient' }, 1000);
-        } else {
-            this.setState({ isShowLoading: true });
-            if (this.props.language == "en") {
-                toast.error("Something wrongs...!");
-            } else {
-                toast.error("Lỗi!");
+                toast.error("Đơn thuốc rỗng!");
             }
         }
-        this.setState({ isShowLoading: false });
     };
 
 
     render() {
-        let { isShowLoading, email, patientName, drugs, desciption, listRemedyDetails } = this.state
+        let { isShowLoading, email, patientName, drugs, description, listRemedyDetails } = this.state
         let { language } = this.props
         console.log(drugs)
         return (
@@ -188,7 +222,7 @@ class EditRemedy extends Component {
             >
                 <div className="create-remedy-container">
                     <div className="m-s-title">
-                        <FormattedMessage id={"admin.manage-drug.create-prescription"} />
+                        Xem chi tiết đơn thuốc
                     </div>
                 </div>
                 <div className="row my-3">
@@ -252,8 +286,8 @@ class EditRemedy extends Component {
                 </button>
                 <div className="create-remedy-body">
                     <div className="col-12 table-create-remedy">
-                        <div class="col-12 form-group my-5">
-                            <label>Chuẩn đoán bệnh</label>
+                        <div class="col-12 form-group my-3">
+                            <label>Chuẩn đoán bệnh:</label>
                             <textarea
                                 className="form-control"
                                 aria-label="With textarea"
@@ -262,6 +296,7 @@ class EditRemedy extends Component {
                             >
                             </textarea>
                         </div>
+
                         <div className="title-remedy">
                             Đơn thuốc
                         </div>
@@ -302,13 +337,26 @@ class EditRemedy extends Component {
                                 )}
                             </tbody>
                         </table>
+                        <div class="col-12 form-group my-3">
+                            <label>Ghi chú:</label>
+                            <textarea
+                                className="form-control"
+                                aria-label="With textarea"
+                                value={this.state.note}
+                                onChange={(event) => this.handleOnChangeNote(event)}
+                            >
+                            </textarea>
+                        </div>
                     </div>
                 </div>
 
                 <button
-                    onClick={() => this.updateRemedy()} type="button" class="btn btn-primary"
+                    onClick={() => this.updateRemedy()}
+                    type="button"
+                    className="btn"
+                    style={{ backgroundColor: '#ffc107' }}
                 >
-                    Sửa đơn thuốc
+                    Sửa đơn thuốc và gửi lại
                 </button>
             </LoadingOverlay >
         );

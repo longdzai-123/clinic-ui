@@ -55,15 +55,8 @@ class ManageDoctor extends Component {
   }
 
   componentDidMount = async () => {
-    // this.props.getPositionStart();
     this.props.fetchAllDoctors();
     this.props.getAllRequiredDoctorInfor();
-    // let res = await filterDoctors({})
-    // if (res && res.errCode === 0) {
-    //   this.setState({
-    //     listDoctorsRaw: res.data
-    //   })
-    // }
   }
 
   buildDataInputSelect = (inputData, type) => {

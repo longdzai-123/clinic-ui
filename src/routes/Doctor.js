@@ -6,6 +6,7 @@ import Header from '../containers/Header/Header';
 import ManagePatient from "../containers/System/Doctor/ManagePatient";
 import CreateRemedy from '../containers/System/Doctor/CreateRemedy';
 import EditRemedy from '../containers/System/Doctor/EditRemedy';
+import StatisticInvoice from '../containers/System/Doctor/StatisticInvoice';
 
 class Doctor extends Component {
     render() {
@@ -21,6 +22,7 @@ class Doctor extends Component {
                             <Route path="/doctor/manage-patient" component={ManagePatient} />
                             <Route path="/doctor/create-remedy/:id" component={CreateRemedy} />
                             <Route path="/doctor/edit-remedy/:id" component={EditRemedy} />
+                            <Route path="/doctor/statistic-invoice" component={StatisticInvoice} />
                         </Switch>
                     </div>
                 </div>

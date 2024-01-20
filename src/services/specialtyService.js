@@ -116,3 +116,19 @@ export const deleteSpecialty = (id) => {
       console.log(error);
     });
 }
+
+export const searchByName = (name) => {
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: `/specialty/search?keyWord=${name}`,
+  };
+  return httpRequest.request(config)
+    .then((response) => {
+      console.log(response.data)
+      return response.data
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}

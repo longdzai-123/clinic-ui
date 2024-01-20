@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./TableManageUser.scss";
 import * as actions from "../../../store/actions";
+import { activeAccount } from "../../../services/userService";
+import { toast } from "react-toastify";
 
 
 class TableManageUser extends Component {
@@ -33,6 +35,37 @@ class TableManageUser extends Component {
         this.props.handleEditUserFromParentKey(user)
     };
 
+    handleActive = async (item) => {
+        this.setState({ isShowLoading: true });
+        let res = await activeAccount(item.id)
+        if (res && res.code === 200) {
+            this.setState({ isShowLoading: false });
+
+            if (this.props.language == "en") {
+                if (res.data.isActive === true) {
+                    toast.success("Active account successful!");
+                } else {
+                    toast.success("InActive account successful!");
+                }
+            } else {
+                if (res.data.isActive === true) {
+                    toast.success("Active tài khoản thành công!");
+                } else {
+                    toast.success("InActive tài khoản thành công");
+                }
+            }
+            this.props.fetchUserRedux()
+        } else {
+            this.setState({ isShowLoading: true });
+            if (this.props.language == "en") {
+                toast.error("Something wrongs...!");
+            } else {
+                toast.error("Lỗi!");
+            }
+        }
+        this.setState({ isShowLoading: false });
+    }
+
 
     render() {
         let arrUsers = this.state.usersRedux;
@@ -46,6 +79,7 @@ class TableManageUser extends Component {
                         <th>FirstName</th>
                         <th>LastName</th>
                         <th>Address</th>
+                        <th>Active</th>
                         <th>Actions</th>
                     </tr>
                     {arrUsers && arrUsers.length > 0 && arrUsers.map((item, index) => {
@@ -55,6 +89,25 @@ class TableManageUser extends Component {
                                 <td>{item.firstName}</td>
                                 <td>{item.lastName}</td>
                                 <td>{item.address}</td>
+                                <td style={{ textAlign: "center" }}>
+                                    {item.isActive === true ?
+                                        <button
+                                            className="btn"
+                                            style={{ backgroundColor: 'rgb(52 231 146)' }}
+                                            onClick={() => this.handleActive(item)}
+                                        >
+                                            Active
+                                        </button>
+                                        :
+                                        < button
+                                            className="btn"
+                                            style={{ backgroundColor: '#ffc107' }}
+                                            onClick={() => this.handleActive(item)}
+                                        >
+                                            Inactive
+                                        </button>
+                                    }
+                                </td>
                                 <td>
                                     <button
                                         onClick={() => this.handleEditUser(item)}

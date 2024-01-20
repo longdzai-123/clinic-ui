@@ -27,6 +27,7 @@ import ListSpecialty from "./HomePage/SectionList/ListSpecialty";
 import ListOutStandingDoctor from "./HomePage/SectionList/ListOutStandingDoctor";
 import ListMedicalFacility from "./HomePage/SectionList/ListMedicalFacility";
 import DetailClinic from "./Patient/Clinic/DetailClinic";
+import Signup from "./Auth/Signup";
 
 class App extends Component {
 
@@ -53,11 +54,10 @@ class App extends Component {
             <Fragment>
                 <Router history={history}>
                     <div className="main-container">
-
                         <div className="content-container">
                             <CustomScrollbars style={{ height: "100vh", width: "100%" }}>
                                 <Switch>
-                                    <Route path={path.HOME} exact component={(Home)} />
+                                    <Route path={path.HOME} exact component={Home} />
                                     <Route path={path.LOGIN} component={userIsNotAuthenticated(Login)} />
                                     <Route path={path.SYSTEM} component={userIsAuthenticated(System)} />
                                     <Route path={'/doctor/'} component={userIsAuthenticated(Doctor)} />
@@ -69,6 +69,7 @@ class App extends Component {
                                     <Route path={path.LIST_SPECIALTY} component={ListSpecialty} />
                                     <Route path={path.LIST_MEDICAL_FACILITY} component={ListMedicalFacility} />
                                     <Route path={path.LIST_OUSTANDING_DOCTOR} component={ListOutStandingDoctor} />
+                                    <Route path={path.SIGNUP} exact component={Signup} />
                                 </Switch>
                             </CustomScrollbars>
                         </div>

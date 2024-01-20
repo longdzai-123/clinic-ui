@@ -4,22 +4,22 @@ import { FormattedMessage } from "react-intl";
 import "./ManagePatient.scss";
 import DatePicker from "../../../components/Input/DatePicker";
 import {
-  cancelBooking,
+  deleteBookingById,
   getAllPatientForDoctor,
   postCreateRemedy,
 } from "../../../services/bookingService";
-import { postSendRemedy } from "../../../services/remedyService";
+import { postSendRemedy, updateRemedyImageService } from "../../../services/remedyService";
 import { getDoctorInforById } from "../../../services/doctorService";
 import moment from "moment";
 import { LANGUAGES } from "../../../utils";
 import RemedyModal from "./RemedyModal";
-//import CreateImageRemedyModal from "./CreateImageRemedyModal";
 import { toast } from "react-toastify";
 import LoadingOverlay from "react-loading-overlay";
 import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
 import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css"; // This only needs to be imported once in your app
 import { withRouter } from "react-router";
+
 
 class ManagePatient extends Component {
   constructor(props) {
@@ -75,6 +75,7 @@ class ManagePatient extends Component {
   };
   handleBtnConfirm = (item) => {
     let data = {
+      id: item.id,
       email: item.patient.email,
       phoneNumber: item.patientPhoneNumber,
       patientId: item.patient.id,
@@ -83,12 +84,14 @@ class ManagePatient extends Component {
       timeType: item.timeType.keyMap,
       date: item.date,
       patientName: item.patient.firstName,
+      image: item.imageRemedy
     };
     this.setState({
       isOpenRemedyModal: true,
       dataModal: data,
     });
   };
+
   handleBtnCreateRemedy = (item) => {
     const navigateLink = `/doctor/create-remedy/${item.id}`;
     if (this.props.history) {
@@ -102,32 +105,27 @@ class ManagePatient extends Component {
     }
   }
 
-  // handleBtnCancel = async (item) => {
-  //   this.setState({ isShowLoading: true });
-  //   let res = await cancelBooking({
-  //     doctorId: item.doctorId,
-  //     patientId: item.patientId,
-  //     timeType: item.timeType,
-  //     date: item.date,
-  //     statusId: item.statusId,
-  //   });
-  //   if (res && res.errCode === 0) {
-  //     this.setState({ isShowLoading: false });
-  //     if (this.props.language === "en") {
-  //       toast.success("cancel appointment succeed!");
-  //     } else {
-  //       toast.success("Hủy cuộc hẹn thành công!");
-  //     }
-  //     await this.getDataPatient();
-  //   } else {
-  //     this.setState({ isShowLoading: true });
-  //     if (this.props.language === "en") {
-  //       toast.error("Something wrongs...!");
-  //     } else {
-  //       toast.error("Lỗi!");
-  //     }
-  //   }
-  // };
+
+  handleBtnCancel = async (item) => {
+    this.setState({ isShowLoading: true });
+    let res = await deleteBookingById(item.id);
+    if (res && res.code === 200) {
+      this.setState({ isShowLoading: false });
+      if (this.props.language === "en") {
+        toast.success("cancel appointment succeed!");
+      } else {
+        toast.success("Hủy cuộc hẹn thành công!");
+      }
+      await this.getDataPatient();
+    } else {
+      this.setState({ isShowLoading: true });
+      if (this.props.language === "en") {
+        toast.error("Something wrongs...!");
+      } else {
+        toast.error("Lỗi!");
+      }
+    }
+  };
 
   closeRemedyModal = () => {
     this.setState({
@@ -159,6 +157,7 @@ class ManagePatient extends Component {
         id: dataModal.bookingId
       },
       description: dataChild.description,
+      note: dataChild.note,
       timeType: dataModal.timeType,
       date: dataModal.date,
     });
@@ -166,9 +165,9 @@ class ManagePatient extends Component {
       this.setState({ isShowLoading: false });
 
       if (this.props.language == "en") {
-        toast.success("Send Remedy succeed!");
+        toast.success("Send Remedy Image succeed!");
       } else {
-        toast.success("Gửi đơn thuốc thành công!");
+        toast.success("Gửi hình ảnh đơn thuốc thành công!");
       }
       this.closeRemedyModal();
       await this.getDataPatient();
@@ -182,6 +181,40 @@ class ManagePatient extends Component {
     }
     this.setState({ isShowLoading: false });
   };
+
+  handleUpdateRemedyImage = async (dataChild) => {
+    let { dataModal } = this.state;
+    this.setState({ isShowLoading: true });
+    let res = await updateRemedyImageService({
+      booking: {
+        id: dataModal.bookingId
+      },
+      description: dataChild.description,
+      note: dataChild.note,
+      image: dataChild.imgBase64,
+
+    });
+    if (res && res.code === 200) {
+      this.setState({ isShowLoading: false });
+
+      if (this.props.language == "en") {
+        toast.success("Update Remedy Image succeed!");
+      } else {
+        toast.success("Gửi lại hình ảnh đơn thuốc thành công!");
+      }
+      this.closeRemedyModal();
+      await this.getDataPatient();
+    } else {
+      this.setState({ isShowLoading: true });
+      if (this.props.language == "en") {
+        toast.error("Something wrongs...!");
+      } else {
+        toast.error("Lỗi!");
+      }
+    }
+    this.setState({ isShowLoading: false });
+  }
+
 
   openPreviewImage = (item) => {
     if (item.imageRemedy) {
@@ -223,6 +256,7 @@ class ManagePatient extends Component {
             dataModal={dataModal}
             closeRemedyModal={this.closeRemedyModal}
             sendRemedy={this.sendRemedyImage}
+            updateRemedy={this.handleUpdateRemedyImage}
           />
           <div className="manage-patient-container">
             <div className="m-p-title font-weight-bold"><FormattedMessage id={"manage-patient.title"} /> </div>
@@ -294,7 +328,8 @@ class ManagePatient extends Component {
                                 </>
                                 :
                                 <button
-                                  className="btn btn-primary mx-3"
+                                  className="btn mx-3"
+                                  style={{ backgroundColor: '#8cd8b4' }}
                                   onClick={() => this.handleBtnConfirm(item)}
                                 >
                                   <FormattedMessage id={"manage-patient.send-prescriptions"} />
@@ -338,7 +373,6 @@ class ManagePatient extends Component {
                                 <>
                                   <button
                                     className="btn btn-success"
-                                    disabled="true"
                                   >
                                     Đã khám
                                   </button>

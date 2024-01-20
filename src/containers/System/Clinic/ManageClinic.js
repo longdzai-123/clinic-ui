@@ -8,7 +8,7 @@ import "react-markdown-editor-lite/lib/index.css";
 import { LANGUAGES, CRUD_ACTIONS, CommonUtils } from "../../../utils";
 
 // import { createNewClinic } from "../../../services/userService";
-// import { filterClinics, deleteClinic } from "../../../services/clinicService";
+import { searchByNameAndAddress, deleteClinic } from "../../../services/clinicService";
 import { getAllClinic } from "../../../services/clinicService";
 
 import { toast } from "react-toastify";
@@ -34,14 +34,6 @@ class ManageClinic extends Component {
   }
 
   async getAllClinics() {
-    // let res = await filterClinics({})
-    // if (res && res.errCode === 0) {
-    //   console.log("res", res)
-    //   let allClinics = res.data.reverse()
-    //   this.setState({
-    //     listClinics: allClinics
-    //   })
-    // }
     let res = await getAllClinic()
     if (res && res.code === 200 && res.data) {
       console.log("res", res)
@@ -120,25 +112,25 @@ class ManageClinic extends Component {
   //   }
   // };
 
-  // handleDeleteClinic = async (clinicId) => {
-  //   let { language } = this.props;
-  //   let res = await deleteClinic({ id: clinicId })
-  //   if (res && res.errCode === 0) {
-  //     if (language === "en") {
-  //       toast.success("Delete hospital successfully!");
-  //     } else {
-  //       toast.success("Xóa bệnh viện thành công!");
-  //     }
-  //     await this.getAllClinics();
-  //   } else {
-  //     await this.getAllClinics();
-  //     if (language === "en") {
-  //       toast.error("Something wrongs!");
-  //     } else {
-  //       toast.error("Lỗi!");
-  //     }
-  //   }
-  // }
+  handleDeleteClinic = async (clinicId) => {
+    let { language } = this.props;
+    let res = await deleteClinic(clinicId)
+    if (res && res.code === 200) {
+      if (language === "en") {
+        toast.success("Delete hospital successfully!");
+      } else {
+        toast.success("Xóa bệnh viện thành công!");
+      }
+      await this.getAllClinics();
+    } else {
+      await this.getAllClinics();
+      if (language === "en") {
+        toast.error("Something wrongs!");
+      } else {
+        toast.error("Lỗi!");
+      }
+    }
+  }
 
   onChangeInput = (event, id) => {
     let copyState = { ...this.state };
@@ -150,26 +142,26 @@ class ManageClinic extends Component {
     });
   };
 
-  // handleFilterClinis = async () => {
-  //   let {
-  //     name,
-  //     address,
-  //   } = this.state;
+  handleFilterClinis = async () => {
+    let {
+      name,
+      address,
+    } = this.state;
 
-  //   let data = {
-  //     name: name,
-  //     address: address,
-  //   }
+    let data = {
+      name: name,
+      address: address,
+    }
 
-  //   let res = await filterClinics(data)
+    let res = await searchByNameAndAddress(data)
 
-  //   if (res && res.data) {
-  //     let allClinics = res.data.reverse()
-  //     this.setState({
-  //       listClinics: allClinics
-  //     })
-  //   }
-  // }
+    if (res && res.data) {
+      let allClinics = res.data.reverse()
+      this.setState({
+        listClinics: allClinics
+      })
+    }
+  }
 
   handleReset = async () => {
     this.setState({
@@ -207,14 +199,21 @@ class ManageClinic extends Component {
             </div>
           </div>
           <div class="col-12">
-            <button onClick={() => this.handleFilterClinis()} type="button" class="btn btn-primary mr-5"><FormattedMessage id="medical-history.apply" /></button>
-            <button onClick={() => this.handleReset()} type="button" class="btn btn-primary"><FormattedMessage id="medical-history.reset" /></button>
+            <button onClick={() => this.handleFilterClinis()}
+              type="button"
+              class="btn btn-primary my-3"
+            >
+              <FormattedMessage id="medical-history.apply" />
+            </button>
+            <button onClick={() => this.handleReset()} type="button" class="btn btn-warning mx-3">
+              <FormattedMessage id="medical-history.reset" />
+            </button>
           </div>
         </div>
 
         <div class="row">
           <div class="col-12 text-right mb-16">
-            <button type="submit" class="btn btn-primary pointer mr-5"
+            <button type="submit" class="btn btn-primary pointer mx-4"
               onClick={() => { this.toCreateSpecialty() }}
             ><i class="fas fa-plus-circle mr-5"></i><FormattedMessage id="manage-user.btn-create" /></button>
             {/* <button type="submit" class="btn btn-primary pointer" onClick={()=>handleReload()}><i class="fas fa-sync-alt mr-5"></i><FormattedMessage id="medical-history.reset" /></button> */}
@@ -260,53 +259,6 @@ class ManageClinic extends Component {
             }
           </tbody>
         </table>
-
-        {/* <div className="add-new-specialty row">
-          <div className="col-6 form-group">
-            <label>Tên phòng khám</label>
-            <input
-              className="form-control"
-              type="text"
-              value={this.state.name}
-              onChange={(event) => this.handleOnChangeInput(event, "name")}
-            />
-          </div>
-          <div className="col-6 form-group">
-            <label>Ảnh phòng khám</label>
-            <input
-              className="form-control-file"
-              type="file"
-              onChange={(event) => this.handleOnChangeImage(event)}
-            />
-          </div>
-
-          <div className="col-6 form-group">
-            <label>Địa chỉ phòng khám</label>
-            <input
-              className="form-control"
-              type="text"
-              value={this.state.address}
-              onChange={(event) => this.handleOnChangeInput(event, "address")}
-            />
-          </div>
-
-          <div className="col-12">
-            <MdEditor
-              style={{ height: "300px" }}
-              renderHTML={(text) => mdParser.render(text)}
-              onChange={this.handleEditorChange}
-              value={this.state.descriptionMarkdown}
-            />
-          </div>
-          <div className="col-12">
-            <button
-              className="btn-save-specialty"
-              onClick={() => this.handleSaveNewClinic()}
-            >
-              Save
-            </button>
-          </div>
-        </div> */}
       </div>
     );
   }

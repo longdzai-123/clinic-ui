@@ -34,11 +34,14 @@
             "specialty": "Chuyên khoa",
             "manage-specialty": "Quản lý chuyên khoa",
             "handbook": "Cẩm nang",
-            "manage-handbook": "Quản lý cẩm nang"
+            "manage-handbook": "Quản lý cẩm nang",
+            "drug": "Thuốc",
+            "manage-drug": "Quản lý thuốc"
         },
         "doctor": {
             "manage-schedule": "Quản lý kế hoạch khám bệnh",
-            "manage-patient": "Quản lý bệnh nhân khám bệnh"
+            "manage-patient": "Quản lý bệnh nhân khám bệnh",
+            "statistic-invoice": "Thống kê hóa đơn khám bệnh"
         }
     },
     "manage-user": {

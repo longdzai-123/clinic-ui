@@ -9,8 +9,7 @@ import { LANGUAGES, CRUD_ACTIONS, CommonUtils } from "../../../utils";
 import { createNewSpecialty } from "../../../services/specialtyService";
 import { toast } from "react-toastify";
 //import { filterSpecialties, deleteSpecialty } from "../../../services/specialtyService";
-import { deleteSpecialty } from "../../../services/specialtyService";
-import { getAllSpecialty } from "../../../services/specialtyService";
+import { getAllSpecialty, deleteSpecialty, searchByName } from "../../../services/specialtyService";
 import { withRouter } from "react-router";
 
 
@@ -155,24 +154,20 @@ class ManageSpecialty extends Component {
     }
   };
 
-  // handleFilterSpecialties = async () => {
-  //   let {
-  //     name
-  //   } = this.state;
+  handleFilterSpecialties = async () => {
+    let {
+      name
+    } = this.state;
 
-  //   let data = {
-  //     name: name
-  //   }
+    let res = await searchByName(name)
 
-  //   let res = await filterSpecialties(data)
-
-  //   if (res && res.data) {
-  //     let allSpecialties = res.data.reverse()
-  //     this.setState({
-  //       listSpecialties: allSpecialties
-  //     })
-  //   }
-  // }
+    if (res && res.data) {
+      let allSpecialties = res.data.reverse()
+      this.setState({
+        listSpecialties: allSpecialties
+      })
+    }
+  }
 
   render() {
     let { listSpecialties } = this.state;
@@ -191,16 +186,23 @@ class ManageSpecialty extends Component {
             </div>
           </div>
           <div class="col-12">
-            <button onClick={() => this.handleFilterSpecialties()} type="button" class="btn btn-primary mr-5"><FormattedMessage id="medical-history.apply" /></button>
-            <button onClick={() => this.handleReset()} type="button" class="btn btn-primary"><FormattedMessage id="medical-history.reset" /></button>
+            <button onClick={() => this.handleFilterSpecialties()} type="button" class="btn btn-primary my-3">
+              <FormattedMessage id="medical-history.apply" />
+            </button>
+            <button onClick={() => this.handleReset()} type="button" class="btn btn-warning mx-3">
+              <FormattedMessage id="medical-history.reset" />
+            </button>
           </div>
         </div>
 
         <div class="row">
           <div class="col-12 text-right mb-16">
-            <button type="submit" class="btn btn-primary pointer mr-5"
+            <button type="submit" class="btn btn-primary pointer mx-4"
               onClick={() => { this.toCreateSpecialty() }}
-            ><i class="fas fa-plus-circle mr-5"></i><FormattedMessage id="manage-user.btn-create" /></button>
+            >
+              <i class="fas fa-plus-circle mr-5"></i>
+              <FormattedMessage id="manage-user.btn-create" />
+            </button>
           </div>
         </div>
 

@@ -95,7 +95,7 @@ class CreateClinic extends Component {
                 descriptionHTML: "",
                 descriptionMarkdown: "",
             });
-            setTimeout(function () { window.location.href = '/manage-clinic' }, 1000);
+            setTimeout(function () { window.location.href = '/system/manage-clinic' }, 1000);
         } else {
             if (language == "en") {
                 toast.error("Something wrongs!");
