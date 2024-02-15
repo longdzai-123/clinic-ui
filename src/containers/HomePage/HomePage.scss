@@ -82,9 +82,30 @@
                     border-radius: 50%;
                 }
 
-                &.section-handbook {
-                    background-image: url("../../assets/handbook/may-do-huyet-ap-bap-tay.jpg");
+                &.section-handbook-1 {
+                    background-image: url("../../assets/handbook/115737-xoa-quang-tham-mat-gia-bao-nhieu.png");
                 }
+
+                &.section-handbook-2 {
+                    background-image: url("../../assets/handbook/104848-tri-mun-lung-bao-nhieu-tien-tphcm.png");
+                }
+
+                &.section-handbook-3 {
+                    background-image: url("../../assets/handbook/155238-gia-xet-nghiem-nipt-bao-nhieu.png");
+                }
+
+                &.section-handbook-4 {
+                    background-image: url("../../assets/handbook/094717-tre-hoa-da-mat.png");
+                }
+
+                &.section-handbook-5 {
+                    background-image: url("../../assets/handbook/134508-tre-hoa-ban-tay-2.png");
+                }
+
+                &.section-handbook-6 {
+                    background-image: url("../../assets/handbook/111047-tre-hoa-da-vung-co.png");
+                }
+
             }
         }
     }
@@ -181,6 +202,7 @@
             p {
                 text-align: justify;
                 font-style: italic;
+                font-size: 17px;
                 padding-top: 15px;
             }
         }

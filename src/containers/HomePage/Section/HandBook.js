@@ -17,30 +17,45 @@ class HandBook extends Component {
                     </div>
                     <div className="section-body">
                         <Slider {...this.props.settings}>
-                            <div className='section-customize'>
-                                <div className='bg-img section-handbook' />
-                                <div>Cơ xương khớp 1</div>
-                            </div>
-                            <div className='section-customize'>
-                                <div className='bg-img section-handbook' />
-                                <div>Cơ xương khớp 2</div>
-                            </div>
-                            <div className='section-customize'>
-                                <div className='bg-img section-handbook' />
-                                <div>Cơ xương khớp 3</div>
-                            </div>
-                            <div className='section-customize'>
-                                <div className='bg-img section-handbook' />
-                                <div>Cơ xương khớp 4</div>
-                            </div>
-                            <div className='section-customize'>
-                                <div className='bg-img section-handbook' />
-                                <div>Cơ xương khớp 5</div>
-                            </div>
-                            <div className='section-customize'>
-                                <div className='bg-img section-handbook' />
-                                <div>Cơ xương khớp 6</div>
-                            </div>
+                            <a target="_blank" href="https://bookingcare.vn/cam-nang/xoa-quang-tham-mat-gia-bao-nhieu-tai-tphcm-p5954.html" style={{ color: 'green' }}>
+                                <div className='section-customize'>
+                                    <div className='bg-img section-handbook-1' />
+                                    <div>Xóa quầng thâm mắt giá bao nhiêu tại TPHCM?</div>
+                                </div>
+                            </a>
+                            <a target="_blank" href="https://bookingcare.vn/cam-nang/lieu-trinh-tri-mun-lung-bao-nhieu-tien-chi-phi-tri-mun-lung-tphcm-p5943.html">
+                                <div className='section-customize'>
+                                    <div className='bg-img section-handbook-2' />
+                                    <div>Liệu trình trị mụn lưng bao nhiêu tiền?</div>
+                                </div>
+                            </a>
+
+                            <a target="_blank" href="https://bookingcare.vn/cam-nang/xet-nghiem-nipt-tai-ha-noi-bao-nhieu-tien-review-chi-tiet-bang-gia-p4154.html">
+                                <div className='section-customize'>
+                                    <div className='bg-img section-handbook-3' />
+                                    <div>Xét nghiệm NIPT tại Hà Nội bao nhiêu tiền?</div>
+                                </div>
+                            </a>
+
+                            <a target="_blank" href="https://bookingcare.vn/cam-nang/tre-hoa-da-mat-bang-cong-nghe-cao-la-gi-diem-danh-7-dia-chi-tre-hoa-da-mat-uy-tin-tai-tp-hcm-p5916.html">
+                                <div className='section-customize'>
+                                    <div className='bg-img section-handbook-4' />
+                                    <div>Trẻ hóa da mặt bằng công nghệ cao là gì?</div>
+                                </div>
+                            </a>
+
+                            <a target="_blank" href="https://bookingcare.vn/cam-nang/tre-hoa-ban-tay-co-nhung-phuong-phap-nao-top-6-dia-chi-tre-hoa-tay-uy-tin-tai-tp-hcm-p5917.html">
+                                <div className='section-customize'>
+                                    <div className='bg-img section-handbook-5' />
+                                    <div>Trẻ hoá bàn tay có những phương pháp nào?</div>
+                                </div>
+                            </a>
+                            <a target="_blank" href="https://bookingcare.vn/cam-nang/tre-hoa-da-vung-co-bang-cong-nghe-nao-dia-chi-tre-hoa-da-vung-co-uy-tin-tai-tphcm-p5951.html">
+                                <div className='section-customize'>
+                                    <div className='bg-img section-handbook-6' />
+                                    <div>Trẻ hoá da vùng cổ bằng công nghệ nào? </div>
+                                </div>
+                            </a>
                         </Slider>
                     </div>
 

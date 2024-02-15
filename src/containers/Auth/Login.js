@@ -38,6 +38,13 @@ class Login extends Component {
             console.log(data)
             if (data.code === 200) {
                 this.props.userLoginSuccess(data.data)
+                console.log(data)
+                if (data.data.roleId === "R2") {
+                    this.props.history.push(`/doctor/manage-schedule`);
+                }
+                if (data.data.roleId === "R1") {
+                    this.props.history.push(`/system/user-manage`);
+                }
             }
             if (data.code === 403001) {
                 if (this.props.language === "vi") {
